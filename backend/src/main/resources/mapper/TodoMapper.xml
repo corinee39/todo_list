@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.bwsy.todolist.mapper.TodoMapper">
+
+    <resultMap id="TodoResultMap" type="com.bwsy.todolist.dto.TodoDTO">
+        <id property="todoId" column="todo_id" />
+        <result property="userId" column="user_id" />
+        <result property="categoryId" column="category_id" />
+        <result property="title" column="title" />
+        <result property="content" column="content" />
+        <result property="todoDate" column="todo_date" />
+        <result property="status" column="status" />
+        <result property="priority" column="priority" />
+        <result property="completedAt" column="completed_at" />
+        <result property="createdAt" column="created_at" />
+        <result property="updatedAt" column="updated_at" />
+        <result property="deletedAt" column="deleted_at" />
+    </resultMap>
+
+    <select id="findTodosByDate" resultMap="TodoResultMap">
+        SELECT
+            todo_id,
+            user_id,
+            category_id,
+            title,
+            content,
+            todo_date,
+            status,
+            priority,
+            completed_at,
+            created_at,
+            updated_at,
+            deleted_at
+        FROM todos
+        WHERE user_id = #{userId}
+          AND todo_date = #{todoDate}
+          AND deleted_at IS NULL
+        ORDER BY
+            CASE priority
+                WHEN 'HIGH' THEN 1
+                WHEN 'MEDIUM' THEN 2
+                WHEN 'LOW' THEN 3
+                ELSE 4
+            END,
+            created_at DESC
+    </select>
+
+    <select id="findTodoByIdAndUserId" resultMap="TodoResultMap">
+        SELECT
+            todo_id,
+            user_id,
+            category_id,
+            title,
+            content,
+            todo_date,
+            status,
+            priority,
+            completed_at,
+            created_at,
+            updated_at,
+            deleted_at
+        FROM todos
+        WHERE todo_id = #{todoId}
+          AND user_id = #{userId}
+          AND deleted_at IS NULL
+    </select>
+
+    <insert id="insertTodo"
+            parameterType="com.bwsy.todolist.dto.TodoDTO"
+            useGeneratedKeys="true"
+            keyProperty="todoId"
+            keyColumn="todo_id">
+        INSERT INTO todos (
+            user_id,
+            category_id,
+            title,
+            content,
+            todo_date,
+            status,
+            priority,
+            created_at
+        ) VALUES (
+            #{userId},
+            #{categoryId},
+            #{title},
+            #{content},
+            #{todoDate},
+            #{status},
+            #{priority},
+            CURRENT_TIMESTAMP
+        )
+    </insert>
+
+    <update id="updateTodo" parameterType="com.bwsy.todolist.dto.TodoDTO">
+        UPDATE todos
+        SET
+            category_id = #{categoryId},
+            title = #{title},
+            content = #{content},
+            todo_date = #{todoDate},
+            status = #{status},
+            priority = #{priority},
+            completed_at = CASE
+                WHEN #{status} = 'DONE' THEN NVL(completed_at, CURRENT_TIMESTAMP)
+                ELSE NULL
+            END,
+            updated_at = CURRENT_TIMESTAMP
+        WHERE todo_id = #{todoId}
+          AND user_id = #{userId}
+          AND deleted_at IS NULL
+    </update>
+
+    <update id="softDeleteTodo">
+        UPDATE todos
+        SET
+            deleted_at = CURRENT_TIMESTAMP,
+            updated_at = CURRENT_TIMESTAMP
+        WHERE todo_id = #{todoId}
+          AND user_id = #{userId}
+          AND deleted_at IS NULL
+    </update>
+
+    <select id="existsActiveCategoryByIdAndUserId" resultType="int">
+        SELECT COUNT(*)
+        FROM todo_categories
+        WHERE category_id = #{categoryId}
+          AND user_id = #{userId}
+          AND status = 'ACTIVE'
+          AND deleted_at IS NULL
+    </select>
+
+</mapper>
