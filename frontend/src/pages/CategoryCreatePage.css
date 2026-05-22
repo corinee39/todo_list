@@ -1,0 +1,120 @@
+.category-create-page {
+  min-height: 100vh;
+  padding: 24px;
+  background-color: #f7f7fb;
+}
+
+.category-create-container {
+  max-width: 640px;
+  margin: 0 auto;
+}
+
+.category-create-header {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  margin-bottom: 24px;
+}
+
+.category-back-button {
+  width: 44px;
+  height: 44px;
+  border: 0;
+  border-radius: 14px;
+  background-color: #fff;
+  color: #222;
+  font-size: 22px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+}
+
+.category-create-header h1 {
+  margin: 0 0 6px;
+  font-size: 28px;
+}
+
+.category-create-header p {
+  margin: 0;
+  color: #777;
+}
+
+.category-create-card {
+  padding: 28px;
+  border-radius: 28px;
+  background-color: #fff;
+  box-shadow: 0 12px 32px rgba(91, 80, 190, 0.12);
+}
+
+.category-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 22px;
+}
+
+.category-form-group span {
+  color: #333;
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.category-form-group input {
+  height: 52px;
+  padding: 0 16px;
+  border: 1px solid #e4e1f7;
+  border-radius: 16px;
+  background-color: #fbfbff;
+  color: #222;
+  font-size: 16px;
+  outline: none;
+}
+
+.category-form-group input:focus {
+  border-color: #7b61ff;
+}
+
+.category-theme-list {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.theme-button {
+  height: 42px;
+  padding: 0 16px;
+  border: 0;
+  border-radius: 999px;
+  background-color: #f1f1f5;
+  color: #555;
+  font-weight: 800;
+}
+
+.theme-button.active {
+  color: #fff;
+}
+
+.theme-button.purple.active {
+  background-color: #7b61ff;
+}
+
+.theme-button.blue.active {
+  background-color: #4f7cff;
+}
+
+.theme-button.green.active {
+  background-color: #3da66b;
+}
+
+.theme-button.pink.active {
+  background-color: #e86c9a;
+}
+
+.category-submit-button {
+  width: 100%;
+  height: 52px;
+  border: 0;
+  border-radius: 18px;
+  background-color: #7b61ff;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 800;
+}

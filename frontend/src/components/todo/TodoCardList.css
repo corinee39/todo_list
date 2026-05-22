@@ -27,6 +27,14 @@
   color: #3da66b;
 }
 
+.todo-card.purple h3 {
+  color: #7b61ff;
+}
+
+.todo-card.blue h3 {
+  color: #4f7cff;
+}
+
 .todo-list {
   display: flex;
   flex-direction: column;

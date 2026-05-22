@@ -1,0 +1,146 @@
+.category-manage-page {
+  min-height: 100vh;
+  padding: 24px;
+  background-color: #f7f7fb;
+}
+
+.category-manage-container {
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.category-manage-header {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  margin-bottom: 24px;
+}
+
+.category-back-button {
+  width: 44px;
+  height: 44px;
+  border: 0;
+  border-radius: 14px;
+  background-color: #fff;
+  color: #222;
+  font-size: 22px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+}
+
+.category-manage-header h1 {
+  margin: 0 0 6px;
+  font-size: 28px;
+}
+
+.category-manage-header p {
+  margin: 0;
+  color: #777;
+}
+
+.category-manage-card {
+  padding: 28px;
+  border-radius: 28px;
+  background-color: #fff;
+  box-shadow: 0 12px 32px rgba(91, 80, 190, 0.12);
+}
+
+.category-manage-title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 18px;
+}
+
+.category-manage-title-row h2 {
+  margin: 0;
+  font-size: 22px;
+}
+
+.category-create-shortcut {
+  height: 40px;
+  padding: 0 16px;
+  border: 0;
+  border-radius: 999px;
+  background-color: #7b61ff;
+  color: #fff;
+  font-weight: 800;
+}
+
+.category-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.category-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px;
+  border-radius: 18px;
+  background-color: #fbfbfd;
+  border: 1px solid #eeeef5;
+}
+
+.category-color-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.category-color-dot.pink {
+  background-color: #e86c9a;
+}
+
+.category-color-dot.yellow {
+  background-color: #d99a00;
+}
+
+.category-color-dot.green {
+  background-color: #3da66b;
+}
+
+.category-color-dot.purple {
+  background-color: #7b61ff;
+}
+
+.category-color-dot.blue {
+  background-color: #4f7cff;
+}
+
+.category-info {
+  flex: 1;
+}
+
+.category-info strong {
+  display: block;
+  margin-bottom: 4px;
+  color: #222;
+  font-size: 16px;
+}
+
+.category-info p {
+  margin: 0;
+  color: #888;
+  font-size: 13px;
+}
+
+.default-category-badge {
+  padding: 7px 12px;
+  border-radius: 999px;
+  background-color: #eeeeff;
+  color: #7b61ff;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.category-delete-button {
+  border: 0;
+  border-radius: 999px;
+  padding: 8px 12px;
+  background-color: #ffe8ee;
+  color: #e65b6f;
+  font-size: 13px;
+  font-weight: 800;
+}

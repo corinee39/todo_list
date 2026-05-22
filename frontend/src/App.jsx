@@ -1,6 +1,12 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import AiTodoPage from './pages/AiTodoPage';
+import CategoryCreatePage from './pages/CategoryCreatePage';
+import CategoryManagePage from './pages/CategoryManagePage';
 import HomePage from './pages/HomePage';
+
+const STORAGE_KEY = 'todoSections';
+
+const DEFAULT_CATEGORY_IDS = ['selfCare', 'study', 'prepare'];
 
 const INITIAL_TODO_SECTIONS = [
   {
@@ -56,9 +62,49 @@ const INITIAL_TODO_SECTIONS = [
   },
 ];
 
+function getSavedTodoSections() {
+  const savedTodos = localStorage.getItem(STORAGE_KEY);
+
+  if (!savedTodos) {
+    return INITIAL_TODO_SECTIONS;
+  }
+
+  try {
+    return JSON.parse(savedTodos);
+  } catch (error) {
+    return INITIAL_TODO_SECTIONS;
+  }
+}
+
 function App() {
   const [currentPage, setCurrentPage] = useState('home');
-  const [todoSections, setTodoSections] = useState(INITIAL_TODO_SECTIONS);
+  const [todoSections, setTodoSections] = useState(getSavedTodoSections);
+
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(todoSections));
+  }, [todoSections]);
+
+  const handleAddCategory = ({ title, theme }) => {
+    const newCategory = {
+      id: `category-${Date.now()}`,
+      title,
+      theme,
+      todos: [],
+    };
+
+    setTodoSections((prevSections) => [...prevSections, newCategory]);
+  };
+
+  const handleDeleteCategory = (sectionId) => {
+    if (DEFAULT_CATEGORY_IDS.includes(sectionId)) {
+      alert('기본 카테고리는 삭제할 수 없습니다.');
+      return;
+    }
+
+    setTodoSections((prevSections) =>
+      prevSections.filter((section) => section.id !== sectionId)
+    );
+  };
 
   const handleAddTodo = (sectionId, todoTitle) => {
     const newTodo = {
@@ -141,6 +187,25 @@ function App() {
       <AiTodoPage
         onChangePage={setCurrentPage}
         onAddAiTodos={handleAddAiTodos}
+      />
+    );
+  }
+
+  if (currentPage === 'categoryCreate') {
+    return (
+      <CategoryCreatePage
+        onChangePage={setCurrentPage}
+        onAddCategory={handleAddCategory}
+      />
+    );
+  }
+
+  if (currentPage === 'categoryManage') {
+    return (
+      <CategoryManagePage
+        onChangePage={setCurrentPage}
+        todoSections={todoSections}
+        onDeleteCategory={handleDeleteCategory}
       />
     );
   }

@@ -6,6 +6,16 @@ function SideMenu({ isOpen, onClose, onChangePage }) {
     onClose();
   };
 
+  const handleMoveCategoryCreatePage = () => {
+    onChangePage('categoryCreate');
+    onClose();
+  };
+
+  const handleMoveCategoryManagePage = () => {
+    onChangePage('categoryManage');
+    onClose();
+  };
+
   return (
     <div className={`side-menu-overlay ${isOpen ? 'open' : ''}`}>
       <aside className="side-menu">
@@ -27,8 +37,12 @@ function SideMenu({ isOpen, onClose, onChangePage }) {
         <nav className="side-menu-list">
           <div className="side-menu-section">
             <p className="side-menu-section-title">카테고리</p>
-            <button>＋ 카테고리 등록</button>
-            <button>⚙ 카테고리 관리</button>
+            <button onClick={handleMoveCategoryCreatePage}>
+              ＋ 카테고리 등록
+            </button>
+            <button onClick={handleMoveCategoryManagePage}>
+              ⚙ 카테고리 관리
+            </button>
           </div>
 
           <div className="side-menu-section">
