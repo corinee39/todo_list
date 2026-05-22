@@ -1,0 +1,33 @@
+.todo-card-list {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.todo-card {
+  padding: 20px;
+  border-radius: 28px;
+  background-color: #fff;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.08);
+}
+
+.todo-card h3 {
+  margin: 0 0 12px;
+}
+
+.todo-card p {
+  margin: 8px 0;
+  color: #555;
+}
+
+.todo-card.pink h3 {
+  color: #e86c9a;
+}
+
+.todo-card.yellow h3 {
+  color: #d99a00;
+}
+
+.todo-card.green h3 {
+  color: #3da66b;
+}

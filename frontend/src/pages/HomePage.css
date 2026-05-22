@@ -1,0 +1,11 @@
+.home-page {
+  min-height: 100vh;
+  padding: 24px 24px 120px;
+  background-color: #f7f7fb;
+}
+
+.dashboard {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
