@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import './TodoCardList.css';
 
-function TodoCardList({ todoSections, onAddTodo, onToggleTodo }) {
+function TodoCardList({ todoSections, onAddTodo, onToggleTodo, onDeleteTodo }) {
   const [inputValues, setInputValues] = useState({});
 
   const handleChangeInput = (sectionId, value) => {
@@ -36,17 +36,26 @@ function TodoCardList({ todoSections, onAddTodo, onToggleTodo }) {
 
           <div className="todo-list">
             {section.todos.map((todo) => (
-              <label
-                className={`todo-item ${todo.completed ? 'completed' : ''}`}
+              <div
+                className={`todo-item-row ${todo.completed ? 'completed' : ''}`}
                 key={todo.id}
               >
-                <input
-                  type="checkbox"
-                  checked={todo.completed}
-                  onChange={() => onToggleTodo(section.id, todo.id)}
-                />
-                <span>{todo.title}</span>
-              </label>
+                <label className="todo-item">
+                  <input
+                    type="checkbox"
+                    checked={todo.completed}
+                    onChange={() => onToggleTodo(section.id, todo.id)}
+                  />
+                  <span>{todo.title}</span>
+                </label>
+
+                <button
+                  className="todo-delete-button"
+                  onClick={() => onDeleteTodo(section.id, todo.id)}
+                >
+                  삭제
+                </button>
+              </div>
             ))}
           </div>
 

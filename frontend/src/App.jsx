@@ -121,6 +121,21 @@ function App() {
     );
   };
 
+  const handleDeleteTodo = (sectionId, todoId) => {
+    setTodoSections((prevSections) =>
+      prevSections.map((section) => {
+        if (section.id !== sectionId) {
+          return section;
+        }
+
+        return {
+          ...section,
+          todos: section.todos.filter((todo) => todo.id !== todoId),
+        };
+      })
+    );
+  };
+
   if (currentPage === 'aiTodo') {
     return (
       <AiTodoPage
@@ -136,6 +151,7 @@ function App() {
       todoSections={todoSections}
       onAddTodo={handleAddTodo}
       onToggleTodo={handleToggleTodo}
+      onDeleteTodo={handleDeleteTodo}
     />
   );
 }
