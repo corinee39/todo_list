@@ -1,0 +1,155 @@
+.friend-request-page {
+  min-height: 100vh;
+  padding: 24px;
+  background-color: #f7f7fb;
+}
+
+.friend-request-container {
+  max-width: 760px;
+  margin: 0 auto;
+}
+
+.friend-request-header {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  margin-bottom: 24px;
+}
+
+.friend-back-button {
+  width: 44px;
+  height: 44px;
+  border: 0;
+  border-radius: 14px;
+  background-color: #fff;
+  color: #222;
+  font-size: 22px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+}
+
+.friend-request-header h1 {
+  margin: 0 0 6px;
+  font-size: 28px;
+}
+
+.friend-request-header p {
+  margin: 0;
+  color: #777;
+}
+
+.friend-request-card {
+  padding: 28px;
+  margin-bottom: 24px;
+  border-radius: 28px;
+  background-color: #fff;
+  box-shadow: 0 12px 32px rgba(91, 80, 190, 0.12);
+}
+
+.friend-request-title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 18px;
+}
+
+.friend-request-title-row h2 {
+  margin: 0;
+  font-size: 22px;
+}
+
+.friend-request-title-row span {
+  padding: 7px 12px;
+  border-radius: 999px;
+  background-color: #eeeeff;
+  color: #7b61ff;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.friend-request-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.friend-request-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px;
+  border: 1px solid #eeeef5;
+  border-radius: 20px;
+  background-color: #fbfbfd;
+}
+
+.friend-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background-color: #f0ecff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  flex-shrink: 0;
+}
+
+.friend-info {
+  flex: 1;
+}
+
+.friend-info strong {
+  display: block;
+  margin-bottom: 5px;
+  color: #222;
+  font-size: 16px;
+}
+
+.friend-info p {
+  margin: 0;
+  color: #888;
+  font-size: 13px;
+}
+
+.friend-action-list {
+  display: flex;
+  gap: 8px;
+}
+
+.friend-action-list button {
+  height: 36px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.accept-button {
+  background-color: #7b61ff;
+  color: #fff;
+}
+
+.reject-button {
+  background-color: #f1f1f5;
+  color: #777;
+}
+
+.friend-status {
+  padding: 8px 12px;
+  border-radius: 999px;
+  background-color: #e8f8ef;
+  color: #3da66b;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.empty-message {
+  margin: 0;
+  padding: 24px;
+  border-radius: 18px;
+  background-color: #fbfbfd;
+  color: #999;
+  text-align: center;
+  font-weight: 700;
+}

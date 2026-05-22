@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import AiTodoPage from './pages/AiTodoPage';
 import CategoryCreatePage from './pages/CategoryCreatePage';
 import CategoryManagePage from './pages/CategoryManagePage';
+import FriendRequestPage from './pages/FriendRequestPage';
 import HomePage from './pages/HomePage';
 
 const STORAGE_KEY = 'todoSections';
@@ -62,6 +63,36 @@ const INITIAL_TODO_SECTIONS = [
   },
 ];
 
+const INITIAL_FRIEND_REQUESTS = [
+  {
+    id: 'request-1',
+    name: '모모',
+    avatar: '🐰',
+    message: '같이 공부 기록을 공유하고 싶어요.',
+  },
+  {
+    id: 'request-2',
+    name: '하니',
+    avatar: '🐻',
+    message: '오늘 할 일 같이 체크해요.',
+  },
+  {
+    id: 'request-3',
+    name: '도리',
+    avatar: '🐱',
+    message: '정보처리기사 공부 같이 해요.',
+  },
+];
+
+const INITIAL_FRIENDS = [
+  {
+    id: 'friend-1',
+    name: '진지니',
+    avatar: '🐶',
+    message: '뽀모도로 3세트 완료',
+  },
+];
+
 function getSavedTodoSections() {
   const savedTodos = localStorage.getItem(STORAGE_KEY);
 
@@ -79,6 +110,8 @@ function getSavedTodoSections() {
 function App() {
   const [currentPage, setCurrentPage] = useState('home');
   const [todoSections, setTodoSections] = useState(getSavedTodoSections);
+  const [friendRequests, setFriendRequests] = useState(INITIAL_FRIEND_REQUESTS);
+  const [friends, setFriends] = useState(INITIAL_FRIENDS);
 
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(todoSections));
@@ -182,6 +215,35 @@ function App() {
     );
   };
 
+  const handleAcceptFriendRequest = (requestId) => {
+    const acceptedRequest = friendRequests.find(
+      (request) => request.id === requestId
+    );
+
+    if (!acceptedRequest) {
+      return;
+    }
+
+    const newFriend = {
+      id: `friend-${Date.now()}`,
+      name: acceptedRequest.name,
+      avatar: acceptedRequest.avatar,
+      message: '새로운 친구가 되었습니다.',
+    };
+
+    setFriends((prevFriends) => [...prevFriends, newFriend]);
+
+    setFriendRequests((prevRequests) =>
+      prevRequests.filter((request) => request.id !== requestId)
+    );
+  };
+
+  const handleRejectFriendRequest = (requestId) => {
+    setFriendRequests((prevRequests) =>
+      prevRequests.filter((request) => request.id !== requestId)
+    );
+  };
+
   if (currentPage === 'aiTodo') {
     return (
       <AiTodoPage
@@ -206,6 +268,18 @@ function App() {
         onChangePage={setCurrentPage}
         todoSections={todoSections}
         onDeleteCategory={handleDeleteCategory}
+      />
+    );
+  }
+
+  if (currentPage === 'friendRequest') {
+    return (
+      <FriendRequestPage
+        onChangePage={setCurrentPage}
+        friendRequests={friendRequests}
+        friends={friends}
+        onAcceptFriendRequest={handleAcceptFriendRequest}
+        onRejectFriendRequest={handleRejectFriendRequest}
       />
     );
   }
