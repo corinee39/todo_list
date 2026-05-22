@@ -2,7 +2,7 @@ import { useState } from 'react';
 import SideMenu from './SideMenu';
 import './HomeHeader.css';
 
-function HomeHeader({ onChangePage }) {
+function HomeHeader({ onChangePage, onOpenFriendAdd }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const handleOpenMenu = () => {
@@ -32,7 +32,9 @@ function HomeHeader({ onChangePage }) {
             <span>하니</span>
           </button>
 
-          <button className="friend-add-button">＋</button>
+          <button className="friend-add-button" onClick={onOpenFriendAdd}>
+            ＋
+          </button>
         </div>
 
         <button
