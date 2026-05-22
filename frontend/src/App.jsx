@@ -5,6 +5,7 @@ import CategoryManagePage from './pages/CategoryManagePage';
 import FriendListPage from './pages/FriendListPage';
 import FriendRequestPage from './pages/FriendRequestPage';
 import HomePage from './pages/HomePage';
+import MyPage from './pages/MyPage';
 
 const STORAGE_KEY = 'todoSections';
 
@@ -303,6 +304,15 @@ function App() {
         onChangePage={setCurrentPage}
         friends={friends}
         onDeleteFriend={handleDeleteFriend}
+      />
+    );
+  }
+
+  if (currentPage === 'myPage') {
+    return (
+      <MyPage
+        onChangePage={setCurrentPage}
+        todoSections={todoSections}
       />
     );
   }

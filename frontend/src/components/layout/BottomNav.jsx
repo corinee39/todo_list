@@ -29,7 +29,10 @@ function BottomNav({ onChangePage, onOpenNotification }) {
         <span>친구</span>
       </button>
 
-      <button className="bottom-nav-item">
+      <button
+        className="bottom-nav-item"
+        onClick={() => onChangePage('myPage')}
+      >
         <span className="bottom-nav-icon">○</span>
         <span>마이페이지</span>
       </button>
