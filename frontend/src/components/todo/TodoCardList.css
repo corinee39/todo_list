@@ -52,3 +52,34 @@
   color: #aaa;
   text-decoration: line-through;
 }
+
+.todo-add-form {
+  display: flex;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.todo-add-form input {
+  flex: 1;
+  height: 40px;
+  padding: 0 12px;
+  border: 1px solid #e5e5ec;
+  border-radius: 14px;
+  background-color: #fbfbfd;
+  color: #333;
+  outline: none;
+}
+
+.todo-add-form input:focus {
+  border-color: #7b61ff;
+}
+
+.todo-add-form button {
+  min-width: 56px;
+  height: 40px;
+  border: 0;
+  border-radius: 14px;
+  background-color: #222;
+  color: #fff;
+  font-weight: 700;
+}

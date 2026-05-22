@@ -60,6 +60,27 @@ function App() {
   const [currentPage, setCurrentPage] = useState('home');
   const [todoSections, setTodoSections] = useState(INITIAL_TODO_SECTIONS);
 
+  const handleAddTodo = (sectionId, todoTitle) => {
+    const newTodo = {
+      id: `${sectionId}-${Date.now()}`,
+      title: todoTitle,
+      completed: false,
+    };
+
+    setTodoSections((prevSections) =>
+      prevSections.map((section) => {
+        if (section.id !== sectionId) {
+          return section;
+        }
+
+        return {
+          ...section,
+          todos: [...section.todos, newTodo],
+        };
+      })
+    );
+  };
+
   const handleAddAiTodos = (selectedTodos) => {
     const newTodos = selectedTodos.map((todo, index) => ({
       id: `ai-${Date.now()}-${index}`,
@@ -113,6 +134,7 @@ function App() {
     <HomePage
       onChangePage={setCurrentPage}
       todoSections={todoSections}
+      onAddTodo={handleAddTodo}
       onToggleTodo={handleToggleTodo}
     />
   );
