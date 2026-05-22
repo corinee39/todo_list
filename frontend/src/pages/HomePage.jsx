@@ -10,6 +10,7 @@ import './HomePage.css';
 
 function HomePage({
   onChangePage,
+  onLogout,
   todoSections,
   onAddTodo,
   onToggleTodo,
@@ -22,6 +23,7 @@ function HomePage({
     <main className="home-page">
       <HomeHeader
         onChangePage={onChangePage}
+        onLogout={onLogout}
         onOpenFriendAdd={() => setIsFriendAddModalOpen(true)}
       />
 

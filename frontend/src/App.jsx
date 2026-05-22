@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Navigate, Route, Routes, useNavigate } from 'react-router';
 import AiTodoPage from './pages/AiTodoPage';
 import BoardPage from './pages/BoardPage';
 import CategoryCreatePage from './pages/CategoryCreatePage';
@@ -6,9 +7,11 @@ import CategoryManagePage from './pages/CategoryManagePage';
 import FriendListPage from './pages/FriendListPage';
 import FriendRequestPage from './pages/FriendRequestPage';
 import HomePage from './pages/HomePage';
+import LoginPage from './pages/LoginPage';
 import MyPage from './pages/MyPage';
 
 const STORAGE_KEY = 'todoSections';
+const AUTH_STORAGE_KEY = 'isLoggedIn';
 
 const DEFAULT_CATEGORY_IDS = ['selfCare', 'study', 'prepare'];
 
@@ -111,6 +114,22 @@ const INITIAL_BOARD_POSTS = [
   },
 ];
 
+const PAGE_PATHS = {
+  home: '/',
+  aiTodo: '/ai-todos',
+  categoryCreate: '/categories/new',
+  categoryManage: '/categories',
+  friendRequest: '/friends/requests',
+  friendList: '/friends',
+  myPage: '/my',
+  board: '/board',
+  login: '/login',
+};
+
+function getSavedLoginStatus() {
+  return localStorage.getItem(AUTH_STORAGE_KEY) === 'true';
+}
+
 function getSavedTodoSections() {
   const savedTodos = localStorage.getItem(STORAGE_KEY);
 
@@ -126,7 +145,13 @@ function getSavedTodoSections() {
 }
 
 function App() {
-  const [currentPage, setCurrentPage] = useState('home');
+  return <AppRoutes />;
+}
+
+function AppRoutes() {
+  const navigate = useNavigate();
+
+  const [isLoggedIn, setIsLoggedIn] = useState(getSavedLoginStatus);
   const [todoSections, setTodoSections] = useState(getSavedTodoSections);
   const [friendRequests, setFriendRequests] = useState(INITIAL_FRIEND_REQUESTS);
   const [friends, setFriends] = useState(INITIAL_FRIENDS);
@@ -135,6 +160,31 @@ function App() {
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(todoSections));
   }, [todoSections]);
+
+  useEffect(() => {
+    localStorage.setItem(AUTH_STORAGE_KEY, String(isLoggedIn));
+  }, [isLoggedIn]);
+
+  const handleChangePage = (pageName) => {
+    const path = PAGE_PATHS[pageName] || '/';
+    navigate(path);
+  };
+
+  const handleLogin = () => {
+    setIsLoggedIn(true);
+    navigate('/');
+  };
+
+  const handleLogout = () => {
+    const isConfirmed = confirm('로그아웃할까요?');
+
+    if (!isConfirmed) {
+      return;
+    }
+
+    setIsLoggedIn(false);
+    navigate('/login');
+  };
 
   const handleAddCategory = ({ title, theme }) => {
     const newCategory = {
@@ -286,78 +336,110 @@ function App() {
     setBoardPosts((prevPosts) => [newPost, ...prevPosts]);
   };
 
-  if (currentPage === 'aiTodo') {
+  if (!isLoggedIn) {
     return (
-      <AiTodoPage
-        onChangePage={setCurrentPage}
-        onAddAiTodos={handleAddAiTodos}
-      />
-    );
-  }
-
-  if (currentPage === 'categoryCreate') {
-    return (
-      <CategoryCreatePage
-        onChangePage={setCurrentPage}
-        onAddCategory={handleAddCategory}
-      />
-    );
-  }
-
-  if (currentPage === 'categoryManage') {
-    return (
-      <CategoryManagePage
-        onChangePage={setCurrentPage}
-        todoSections={todoSections}
-        onDeleteCategory={handleDeleteCategory}
-      />
-    );
-  }
-
-  if (currentPage === 'friendRequest') {
-    return (
-      <FriendRequestPage
-        onChangePage={setCurrentPage}
-        friendRequests={friendRequests}
-        friends={friends}
-        onAcceptFriendRequest={handleAcceptFriendRequest}
-        onRejectFriendRequest={handleRejectFriendRequest}
-      />
-    );
-  }
-
-  if (currentPage === 'friendList') {
-    return (
-      <FriendListPage
-        onChangePage={setCurrentPage}
-        friends={friends}
-        onDeleteFriend={handleDeleteFriend}
-      />
-    );
-  }
-
-  if (currentPage === 'myPage') {
-    return <MyPage onChangePage={setCurrentPage} todoSections={todoSections} />;
-  }
-
-  if (currentPage === 'board') {
-    return (
-      <BoardPage
-        onChangePage={setCurrentPage}
-        boardPosts={boardPosts}
-        onAddBoardPost={handleAddBoardPost}
-      />
+      <Routes>
+        <Route path="/login" element={<LoginPage onLogin={handleLogin} />} />
+        <Route path="*" element={<Navigate to="/login" replace />} />
+      </Routes>
     );
   }
 
   return (
-    <HomePage
-      onChangePage={setCurrentPage}
-      todoSections={todoSections}
-      onAddTodo={handleAddTodo}
-      onToggleTodo={handleToggleTodo}
-      onDeleteTodo={handleDeleteTodo}
-    />
+    <Routes>
+      <Route
+        path="/"
+        element={
+          <HomePage
+            onChangePage={handleChangePage}
+            onLogout={handleLogout}
+            todoSections={todoSections}
+            onAddTodo={handleAddTodo}
+            onToggleTodo={handleToggleTodo}
+            onDeleteTodo={handleDeleteTodo}
+          />
+        }
+      />
+
+      <Route
+        path="/ai-todos"
+        element={
+          <AiTodoPage
+            onChangePage={handleChangePage}
+            onAddAiTodos={handleAddAiTodos}
+          />
+        }
+      />
+
+      <Route
+        path="/categories/new"
+        element={
+          <CategoryCreatePage
+            onChangePage={handleChangePage}
+            onAddCategory={handleAddCategory}
+          />
+        }
+      />
+
+      <Route
+        path="/categories"
+        element={
+          <CategoryManagePage
+            onChangePage={handleChangePage}
+            todoSections={todoSections}
+            onDeleteCategory={handleDeleteCategory}
+          />
+        }
+      />
+
+      <Route
+        path="/friends/requests"
+        element={
+          <FriendRequestPage
+            onChangePage={handleChangePage}
+            friendRequests={friendRequests}
+            friends={friends}
+            onAcceptFriendRequest={handleAcceptFriendRequest}
+            onRejectFriendRequest={handleRejectFriendRequest}
+          />
+        }
+      />
+
+      <Route
+        path="/friends"
+        element={
+          <FriendListPage
+            onChangePage={handleChangePage}
+            friends={friends}
+            onDeleteFriend={handleDeleteFriend}
+          />
+        }
+      />
+
+      <Route
+        path="/my"
+        element={
+          <MyPage
+            onChangePage={handleChangePage}
+            todoSections={todoSections}
+          />
+        }
+      />
+
+      <Route
+        path="/board"
+        element={
+          <BoardPage
+            onChangePage={handleChangePage}
+            boardPosts={boardPosts}
+            onAddBoardPost={handleAddBoardPost}
+          />
+        }
+      />
+
+      <Route path="/login" element={<Navigate to="/" replace />} />
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </Routes>
   );
 }
 

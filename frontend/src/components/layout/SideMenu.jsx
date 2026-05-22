@@ -1,6 +1,6 @@
 import './SideMenu.css';
 
-function SideMenu({ isOpen, onClose, onChangePage }) {
+function SideMenu({ isOpen, onClose, onChangePage, onLogout }) {
   const handleMoveAiTodoPage = () => {
     onChangePage('aiTodo');
     onClose();
@@ -29,6 +29,11 @@ function SideMenu({ isOpen, onClose, onChangePage }) {
   const handleMoveBoardPage = () => {
     onChangePage('board');
     onClose();
+  };
+
+  const handleLogout = () => {
+    onClose();
+    onLogout();
   };
 
   return (
@@ -74,7 +79,9 @@ function SideMenu({ isOpen, onClose, onChangePage }) {
 
           <div className="side-menu-section">
             <p className="side-menu-section-title">기타</p>
-            <button className="logout-button">로그아웃</button>
+            <button className="logout-button" onClick={handleLogout}>
+              로그아웃
+            </button>
           </div>
         </nav>
       </aside>
