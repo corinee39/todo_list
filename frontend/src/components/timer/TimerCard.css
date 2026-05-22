@@ -1,0 +1,58 @@
+.timer-card {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+  margin-bottom: 24px;
+  padding: 28px;
+  border-radius: 28px;
+  background-color: #fff;
+  box-shadow: 0 12px 32px rgba(91, 80, 190, 0.12);
+}
+
+.timer-circle {
+  width: 160px;
+  height: 160px;
+  border: 12px solid #ded9ff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.timer-circle p {
+  font-size: 36px;
+  font-weight: 800;
+  margin: 0;
+}
+
+.timer-info h2 {
+  margin: 0 0 8px;
+}
+
+.timer-info p {
+  margin: 0 0 16px;
+  color: #666;
+}
+
+.timer-mode-list,
+.timer-button-list {
+  display: flex;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.timer-mode,
+.timer-button-list button {
+  border: 0;
+  border-radius: 999px;
+  padding: 10px 16px;
+  background-color: #f1f1f5;
+  color: #555;
+  font-weight: 600;
+}
+
+.timer-mode.active,
+.start-button {
+  background-color: #7b61ff !important;
+  color: #fff !important;
+}

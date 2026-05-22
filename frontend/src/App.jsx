@@ -1,12 +1,7 @@
-import './App.css';
+import HomePage from './pages/HomePage';
 
 function App() {
-  return (
-    <div className="app">
-      <h1 className="app-title">TodoList Project</h1>
-      <p className="app-description">프론트엔드 시작</p>
-    </div>
-  );
+  return <HomePage />;
 }
 
 export default App;
