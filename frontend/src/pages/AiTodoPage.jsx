@@ -1,7 +1,8 @@
 import { useState } from 'react';
+import { generateAiTodos } from '../api/aiApi';
 import './AiTodoPage.css';
 
-const INITIAL_RECOMMEND_ITEMS = [
+const DEFAULT_RECOMMEND_ITEMS = [
   {
     id: 1,
     title: '운영체제 프로세스와 스레드 개념 정리',
@@ -67,18 +68,65 @@ const PRACTICAL_RECOMMEND_ITEMS = [
   },
 ];
 
+function getFallbackItems(goal) {
+  if (goal.includes('실기')) {
+    return PRACTICAL_RECOMMEND_ITEMS;
+  }
+
+  return DEFAULT_RECOMMEND_ITEMS;
+}
+
+function convertAiItemsToRecommendItems(items) {
+  return items.map((item, index) => ({
+    id: Date.now() + index,
+    title: item,
+    checked: true,
+  }));
+}
+
 function AiTodoPage({ onChangePage, onAddAiTodos }) {
   const [goal, setGoal] = useState('정보처리기사 필기 공부하기');
   const [period, setPeriod] = useState('today');
-  const [recommendItems, setRecommendItems] = useState(INITIAL_RECOMMEND_ITEMS);
+  const [recommendItems, setRecommendItems] = useState(DEFAULT_RECOMMEND_ITEMS);
+  const [isLoading, setIsLoading] = useState(false);
+  const [apiMessage, setApiMessage] = useState('');
 
-  const handleGenerateTodos = () => {
-    if (goal.includes('실기')) {
-      setRecommendItems(PRACTICAL_RECOMMEND_ITEMS);
+  const handleGenerateTodos = async () => {
+    const trimmedGoal = goal.trim();
+
+    if (!trimmedGoal) {
+      alert('목표를 입력해주세요.');
       return;
     }
 
-    setRecommendItems(INITIAL_RECOMMEND_ITEMS);
+    setIsLoading(true);
+    setApiMessage('');
+
+    try {
+      const result = await generateAiTodos({
+        goal: trimmedGoal,
+        period,
+      });
+
+      const items = result.items || [];
+
+      if (items.length === 0) {
+        setRecommendItems(getFallbackItems(trimmedGoal));
+        setApiMessage('AI 응답이 비어 있어 임시 추천 목록을 표시했습니다.');
+        return;
+      }
+
+      setRecommendItems(convertAiItemsToRecommendItems(items));
+      setApiMessage('AI가 추천한 할 일 목록입니다.');
+    } catch (error) {
+      console.error(error);
+      setRecommendItems(getFallbackItems(trimmedGoal));
+      setApiMessage(
+        '백엔드 AI API 연결 전이라 임시 추천 목록을 표시했습니다.'
+      );
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleChangeChecked = (id) => {
@@ -134,6 +182,7 @@ function AiTodoPage({ onChangePage, onAddAiTodos }) {
 
           <div className="ai-period-list">
             <button
+              type="button"
               className={period === 'today' ? 'active' : ''}
               onClick={() => setPeriod('today')}
             >
@@ -141,6 +190,7 @@ function AiTodoPage({ onChangePage, onAddAiTodos }) {
             </button>
 
             <button
+              type="button"
               className={period === 'week' ? 'active' : ''}
               onClick={() => setPeriod('week')}
             >
@@ -148,6 +198,7 @@ function AiTodoPage({ onChangePage, onAddAiTodos }) {
             </button>
 
             <button
+              type="button"
               className={period === 'custom' ? 'active' : ''}
               onClick={() => setPeriod('custom')}
             >
@@ -155,9 +206,15 @@ function AiTodoPage({ onChangePage, onAddAiTodos }) {
             </button>
           </div>
 
-          <button className="ai-generate-button" onClick={handleGenerateTodos}>
-            AI 추천 받기
+          <button
+            className="ai-generate-button"
+            onClick={handleGenerateTodos}
+            disabled={isLoading}
+          >
+            {isLoading ? 'AI 추천 생성 중...' : 'AI 추천 받기'}
           </button>
+
+          {apiMessage && <p className="ai-api-message">{apiMessage}</p>}
         </section>
 
         <section className="ai-result-section">

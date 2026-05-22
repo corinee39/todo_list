@@ -121,6 +121,21 @@
   font-weight: 800;
 }
 
+.ai-generate-button:disabled {
+  background-color: #bbb2ee;
+  cursor: not-allowed;
+}
+
+.ai-api-message {
+  margin: 14px 0 0;
+  padding: 12px 14px;
+  border-radius: 14px;
+  background-color: #fbfbfd;
+  color: #7b61ff;
+  font-size: 13px;
+  font-weight: 800;
+}
+
 .ai-result-section h2 {
   margin: 0 0 14px;
   font-size: 22px;
