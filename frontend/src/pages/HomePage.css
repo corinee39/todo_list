@@ -61,6 +61,11 @@
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
 }
 
+.friend-add-button {
+  font-size: 24px;
+  color: #555;
+}
+
 .menu-button {
   display: flex;
   flex-direction: column;
@@ -76,193 +81,8 @@
   background-color: #222;
 }
 
-.timer-card {
-  display: flex;
-  align-items: center;
-  gap: 32px;
-  margin-bottom: 24px;
-  padding: 28px;
-  border-radius: 28px;
-  background-color: #fff;
-  box-shadow: 0 12px 32px rgba(91, 80, 190, 0.12);
-}
-
-.timer-circle {
-  width: 160px;
-  height: 160px;
-  border: 12px solid #ded9ff;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.timer-circle p {
-  font-size: 36px;
-  font-weight: 800;
-  margin: 0;
-}
-
-.timer-info h2 {
-  margin: 0 0 8px;
-}
-
-.timer-info p {
-  margin: 0 0 16px;
-  color: #666;
-}
-
-.timer-mode-list,
-.timer-button-list {
-  display: flex;
-  gap: 10px;
-  margin-top: 12px;
-}
-
-.timer-mode,
-.timer-button-list button {
-  border: 0;
-  border-radius: 999px;
-  padding: 10px 16px;
-  background-color: #f1f1f5;
-  color: #555;
-  font-weight: 600;
-}
-
-.timer-mode.active,
-.start-button {
-  background-color: #7b61ff !important;
-  color: #fff !important;
-}
-
 .dashboard {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 24px;
-}
-
-.calendar-card,
-.todo-card {
-  border-radius: 28px;
-  background-color: #fff;
-  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.08);
-}
-
-.calendar-card {
-  padding: 24px;
-}
-
-.calendar-title-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 24px;
-}
-
-.calendar-title-row h2 {
-  margin: 0;
-}
-
-.calendar-arrow {
-  width: 32px;
-  height: 32px;
-  border: 0;
-  border-radius: 50%;
-  background-color: #f1f1f5;
-  color: #555;
-  font-size: 18px;
-}
-
-.calendar-weekdays,
-.calendar-grid {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  text-align: center;
-}
-
-.calendar-weekdays {
-  margin-bottom: 14px;
-  color: #777;
-  font-weight: 700;
-  font-size: 14px;
-}
-
-.calendar-grid {
-  gap: 10px;
-}
-
-.calendar-grid button,
-.calendar-grid span {
-  width: 42px;
-  height: 42px;
-  border: 0;
-  border-radius: 50%;
-  background-color: transparent;
-  color: #333;
-  font-weight: 700;
-}
-
-.calendar-grid button {
-  position: relative;
-}
-
-.calendar-grid button::before {
-  content: '';
-  position: absolute;
-  top: 4px;
-  left: 50%;
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background-color: #ddd;
-  transform: translateX(-50%);
-}
-
-.calendar-grid .selected {
-  background-color: #222;
-  color: #fff;
-}
-
-.calendar-grid .today {
-  background-color: #ded9ff;
-  color: #5f45d8;
-}
-
-.saturday {
-  color: #4f7cff !important;
-}
-
-.sunday {
-  color: #ff5c7a !important;
-}
-
-.todo-card-list {
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
-}
-
-.todo-card {
-  padding: 20px;
-}
-
-.todo-card h3 {
-  margin: 0 0 12px;
-}
-
-.todo-card p {
-  margin: 8px 0;
-  color: #555;
-}
-
-.todo-card.pink h3 {
-  color: #e86c9a;
-}
-
-.todo-card.yellow h3 {
-  color: #d99a00;
-}
-
-.todo-card.green h3 {
-  color: #3da66b;
 }
