@@ -1,18 +1,25 @@
 import { request } from './httpClient';
 
-export function getCategories() {
-  return request('/api/categories');
+export function getTodoCategories() {
+  return request('/api/todo-categories');
 }
 
-export function createCategory(categoryData) {
-  return request('/api/categories', {
+export function createTodoCategory(categoryData) {
+  return request('/api/todo-categories', {
     method: 'POST',
     body: JSON.stringify(categoryData),
   });
 }
 
-export function deleteCategory(categoryId) {
-  return request(`/api/categories/${categoryId}`, {
-    method: 'DELETE',
+export function updateTodoCategory(categoryId, categoryData) {
+  return request(`/api/todo-categories/${categoryId}/update`, {
+    method: 'POST',
+    body: JSON.stringify(categoryData),
+  });
+}
+
+export function deleteTodoCategory(categoryId) {
+  return request(`/api/todo-categories/${categoryId}/delete`, {
+    method: 'POST',
   });
 }

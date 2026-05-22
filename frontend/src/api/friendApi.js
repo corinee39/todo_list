@@ -1,7 +1,20 @@
 import { request } from './httpClient';
 
-export function getFriendRequests() {
-  return request('/api/friends/requests');
+export function searchMembers(keyword) {
+  return request(`/api/members/search?keyword=${encodeURIComponent(keyword)}`);
+}
+
+export function sendFriendRequest(friendIdentifier) {
+  return request('/api/friends/requests', {
+    method: 'POST',
+    body: JSON.stringify({
+      friendIdentifier,
+    }),
+  });
+}
+
+export function getReceivedFriendRequests() {
+  return request('/api/friends/requests/received');
 }
 
 export function acceptFriendRequest(requestId) {
@@ -20,17 +33,16 @@ export function getFriends() {
   return request('/api/friends');
 }
 
-export function sendFriendRequest(friendIdentifier) {
-  return request('/api/friends/requests', {
+export function deleteFriend(friendId) {
+  return request(`/api/friends/${friendId}/delete`, {
     method: 'POST',
-    body: JSON.stringify({
-      friendIdentifier,
-    }),
   });
 }
 
-export function deleteFriend(friendId) {
-  return request(`/api/friends/${friendId}`, {
-    method: 'DELETE',
-  });
+export function getFriendTodos(friendId, date) {
+  return request(`/api/friends/${friendId}/todos?date=${date}`);
+}
+
+export function getFriendTodoDetail(friendId, todoId) {
+  return request(`/api/friends/${friendId}/todos/${todoId}`);
 }
