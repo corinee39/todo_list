@@ -26,6 +26,11 @@ function SideMenu({ isOpen, onClose, onChangePage }) {
     onClose();
   };
 
+  const handleMoveBoardPage = () => {
+    onChangePage('board');
+    onClose();
+  };
+
   return (
     <div className={`side-menu-overlay ${isOpen ? 'open' : ''}`}>
       <aside className="side-menu">
@@ -64,7 +69,7 @@ function SideMenu({ isOpen, onClose, onChangePage }) {
           <div className="side-menu-section">
             <p className="side-menu-section-title">기능</p>
             <button onClick={handleMoveAiTodoPage}>🤖 AI 할 일 생성</button>
-            <button>📝 게시판</button>
+            <button onClick={handleMoveBoardPage}>📝 게시판</button>
           </div>
 
           <div className="side-menu-section">

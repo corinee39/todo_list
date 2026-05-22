@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import AiTodoPage from './pages/AiTodoPage';
+import BoardPage from './pages/BoardPage';
 import CategoryCreatePage from './pages/CategoryCreatePage';
 import CategoryManagePage from './pages/CategoryManagePage';
 import FriendListPage from './pages/FriendListPage';
@@ -95,6 +96,21 @@ const INITIAL_FRIENDS = [
   },
 ];
 
+const INITIAL_BOARD_POSTS = [
+  {
+    id: 'post-1',
+    title: '정보처리기사 필기 공부 시작',
+    content: '오늘은 운영체제와 데이터베이스 위주로 공부할 예정입니다.',
+    createdAt: '2026.05.22',
+  },
+  {
+    id: 'post-2',
+    title: 'AI 할 일 생성 기능 정리',
+    content: '목표를 입력하면 할 일을 쪼개주는 흐름으로 구현했습니다.',
+    createdAt: '2026.05.22',
+  },
+];
+
 function getSavedTodoSections() {
   const savedTodos = localStorage.getItem(STORAGE_KEY);
 
@@ -114,6 +130,7 @@ function App() {
   const [todoSections, setTodoSections] = useState(getSavedTodoSections);
   const [friendRequests, setFriendRequests] = useState(INITIAL_FRIEND_REQUESTS);
   const [friends, setFriends] = useState(INITIAL_FRIENDS);
+  const [boardPosts, setBoardPosts] = useState(INITIAL_BOARD_POSTS);
 
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(todoSections));
@@ -258,6 +275,17 @@ function App() {
     );
   };
 
+  const handleAddBoardPost = ({ title, content }) => {
+    const newPost = {
+      id: `post-${Date.now()}`,
+      title,
+      content,
+      createdAt: '오늘',
+    };
+
+    setBoardPosts((prevPosts) => [newPost, ...prevPosts]);
+  };
+
   if (currentPage === 'aiTodo') {
     return (
       <AiTodoPage
@@ -309,10 +337,15 @@ function App() {
   }
 
   if (currentPage === 'myPage') {
+    return <MyPage onChangePage={setCurrentPage} todoSections={todoSections} />;
+  }
+
+  if (currentPage === 'board') {
     return (
-      <MyPage
+      <BoardPage
         onChangePage={setCurrentPage}
-        todoSections={todoSections}
+        boardPosts={boardPosts}
+        onAddBoardPost={handleAddBoardPost}
       />
     );
   }
