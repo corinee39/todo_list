@@ -5,10 +5,10 @@ import TimerCard from '../components/timer/TimerCard';
 import TodoCardList from '../components/todo/TodoCardList';
 import './HomePage.css';
 
-function HomePage() {
+function HomePage({ onChangePage }) {
   return (
     <main className="home-page">
-      <HomeHeader />
+      <HomeHeader onChangePage={onChangePage} />
 
       <TimerCard />
 
