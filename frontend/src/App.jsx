@@ -6,6 +6,7 @@ import CategoryManagePage from './pages/CategoryManagePage';
 import FriendListPage from './pages/FriendListPage';
 import FriendRequestPage from './pages/FriendRequestPage';
 import HomePage from './pages/HomePage';
+import LoginPage from './pages/LoginPage';
 import MyPage from './pages/MyPage';
 
 const STORAGE_KEY = 'todoSections';
@@ -126,6 +127,7 @@ function getSavedTodoSections() {
 }
 
 function App() {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [currentPage, setCurrentPage] = useState('home');
   const [todoSections, setTodoSections] = useState(getSavedTodoSections);
   const [friendRequests, setFriendRequests] = useState(INITIAL_FRIEND_REQUESTS);
@@ -135,6 +137,22 @@ function App() {
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(todoSections));
   }, [todoSections]);
+
+  const handleLogin = () => {
+    setIsLoggedIn(true);
+    setCurrentPage('home');
+  };
+
+  const handleLogout = () => {
+    const isConfirmed = confirm('로그아웃할까요?');
+
+    if (!isConfirmed) {
+      return;
+    }
+
+    setIsLoggedIn(false);
+    setCurrentPage('home');
+  };
 
   const handleAddCategory = ({ title, theme }) => {
     const newCategory = {
@@ -286,6 +304,10 @@ function App() {
     setBoardPosts((prevPosts) => [newPost, ...prevPosts]);
   };
 
+  if (!isLoggedIn) {
+    return <LoginPage onLogin={handleLogin} />;
+  }
+
   if (currentPage === 'aiTodo') {
     return (
       <AiTodoPage
@@ -353,6 +375,7 @@ function App() {
   return (
     <HomePage
       onChangePage={setCurrentPage}
+      onLogout={handleLogout}
       todoSections={todoSections}
       onAddTodo={handleAddTodo}
       onToggleTodo={handleToggleTodo}

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import SideMenu from './SideMenu';
 import './HomeHeader.css';
 
-function HomeHeader({ onChangePage, onOpenFriendAdd }) {
+function HomeHeader({ onChangePage, onLogout, onOpenFriendAdd }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const handleOpenMenu = () => {
@@ -52,6 +52,7 @@ function HomeHeader({ onChangePage, onOpenFriendAdd }) {
         isOpen={isMenuOpen}
         onClose={handleCloseMenu}
         onChangePage={onChangePage}
+        onLogout={onLogout}
       />
     </>
   );
