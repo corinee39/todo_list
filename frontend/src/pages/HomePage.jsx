@@ -5,7 +5,7 @@ import TimerCard from '../components/timer/TimerCard';
 import TodoCardList from '../components/todo/TodoCardList';
 import './HomePage.css';
 
-function HomePage({ onChangePage, todoSections }) {
+function HomePage({ onChangePage, todoSections, onToggleTodo }) {
   return (
     <main className="home-page">
       <HomeHeader onChangePage={onChangePage} />
@@ -14,7 +14,11 @@ function HomePage({ onChangePage, todoSections }) {
 
       <section className="dashboard">
         <CalendarCard />
-        <TodoCardList todoSections={todoSections} />
+
+        <TodoCardList
+          todoSections={todoSections}
+          onToggleTodo={onToggleTodo}
+        />
       </section>
 
       <BottomNav />

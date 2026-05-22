@@ -7,19 +7,52 @@ const INITIAL_TODO_SECTIONS = [
     id: 'selfCare',
     title: '나를 사랑하고 돌보기',
     theme: 'pink',
-    todos: ['아침명상 / 기도 / 스트레칭', '유산균, 비타민C'],
+    todos: [
+      {
+        id: 'self-1',
+        title: '아침명상 / 기도 / 스트레칭',
+        completed: false,
+      },
+      {
+        id: 'self-2',
+        title: '유산균, 비타민C',
+        completed: false,
+      },
+    ],
   },
   {
     id: 'study',
     title: '공부',
     theme: 'yellow',
-    todos: ['정보처리기사 필기 기출 풀이', '오답노트 정리하기'],
+    todos: [
+      {
+        id: 'study-1',
+        title: '정보처리기사 필기 기출 풀이',
+        completed: false,
+      },
+      {
+        id: 'study-2',
+        title: '오답노트 정리하기',
+        completed: false,
+      },
+    ],
   },
   {
     id: 'prepare',
     title: '대화와 준비',
     theme: 'green',
-    todos: ['수험표, 신분증 챙기기', '스터디 참여하기'],
+    todos: [
+      {
+        id: 'prepare-1',
+        title: '수험표, 신분증 챙기기',
+        completed: false,
+      },
+      {
+        id: 'prepare-2',
+        title: '스터디 참여하기',
+        completed: false,
+      },
+    ],
   },
 ];
 
@@ -28,6 +61,12 @@ function App() {
   const [todoSections, setTodoSections] = useState(INITIAL_TODO_SECTIONS);
 
   const handleAddAiTodos = (selectedTodos) => {
+    const newTodos = selectedTodos.map((todo, index) => ({
+      id: `ai-${Date.now()}-${index}`,
+      title: todo,
+      completed: false,
+    }));
+
     setTodoSections((prevSections) =>
       prevSections.map((section) => {
         if (section.id !== 'study') {
@@ -36,7 +75,26 @@ function App() {
 
         return {
           ...section,
-          todos: [...section.todos, ...selectedTodos],
+          todos: [...section.todos, ...newTodos],
+        };
+      })
+    );
+  };
+
+  const handleToggleTodo = (sectionId, todoId) => {
+    setTodoSections((prevSections) =>
+      prevSections.map((section) => {
+        if (section.id !== sectionId) {
+          return section;
+        }
+
+        return {
+          ...section,
+          todos: section.todos.map((todo) =>
+            todo.id === todoId
+              ? { ...todo, completed: !todo.completed }
+              : todo
+          ),
         };
       })
     );
@@ -55,6 +113,7 @@ function App() {
     <HomePage
       onChangePage={setCurrentPage}
       todoSections={todoSections}
+      onToggleTodo={handleToggleTodo}
     />
   );
 }

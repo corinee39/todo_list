@@ -15,11 +15,6 @@
   margin: 0 0 12px;
 }
 
-.todo-card p {
-  margin: 8px 0;
-  color: #555;
-}
-
 .todo-card.pink h3 {
   color: #e86c9a;
 }
@@ -30,4 +25,30 @@
 
 .todo-card.green h3 {
   color: #3da66b;
+}
+
+.todo-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.todo-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #555;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.todo-item input {
+  width: 18px;
+  height: 18px;
+  accent-color: #7b61ff;
+}
+
+.todo-item.completed span {
+  color: #aaa;
+  text-decoration: line-through;
 }
