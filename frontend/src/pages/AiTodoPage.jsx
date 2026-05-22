@@ -1,6 +1,109 @@
+import { useState } from 'react';
 import './AiTodoPage.css';
 
-function AiTodoPage({ onChangePage }) {
+const INITIAL_RECOMMEND_ITEMS = [
+  {
+    id: 1,
+    title: '운영체제 프로세스와 스레드 개념 정리',
+    checked: true,
+  },
+  {
+    id: 2,
+    title: '데이터베이스 정규화 1~3정규형 복습',
+    checked: true,
+  },
+  {
+    id: 3,
+    title: '네트워크 TCP/IP 계층 구조 암기',
+    checked: false,
+  },
+  {
+    id: 4,
+    title: '소프트웨어 공학 UML 다이어그램 보기',
+    checked: false,
+  },
+  {
+    id: 5,
+    title: '필기 기출문제 20문제 풀기',
+    checked: true,
+  },
+  {
+    id: 6,
+    title: '오답노트 정리하기',
+    checked: false,
+  },
+];
+
+const PRACTICAL_RECOMMEND_ITEMS = [
+  {
+    id: 1,
+    title: '요구사항 확인 예상문제 풀기',
+    checked: true,
+  },
+  {
+    id: 2,
+    title: '화면 설계 UML 다이어그램 복습',
+    checked: true,
+  },
+  {
+    id: 3,
+    title: 'SQL 작성 문제 5개 풀기',
+    checked: true,
+  },
+  {
+    id: 4,
+    title: 'Java 기본 문법 문제 풀기',
+    checked: false,
+  },
+  {
+    id: 5,
+    title: '보안 용어 암기하기',
+    checked: false,
+  },
+  {
+    id: 6,
+    title: '실기 오답노트 정리하기',
+    checked: false,
+  },
+];
+
+function AiTodoPage({ onChangePage, onAddAiTodos }) {
+  const [goal, setGoal] = useState('정보처리기사 필기 공부하기');
+  const [period, setPeriod] = useState('today');
+  const [recommendItems, setRecommendItems] = useState(INITIAL_RECOMMEND_ITEMS);
+
+  const handleGenerateTodos = () => {
+    if (goal.includes('실기')) {
+      setRecommendItems(PRACTICAL_RECOMMEND_ITEMS);
+      return;
+    }
+
+    setRecommendItems(INITIAL_RECOMMEND_ITEMS);
+  };
+
+  const handleChangeChecked = (id) => {
+    setRecommendItems((prevItems) =>
+      prevItems.map((item) =>
+        item.id === id ? { ...item, checked: !item.checked } : item
+      )
+    );
+  };
+
+  const handleAddSelectedTodos = () => {
+    const selectedTodos = recommendItems
+      .filter((item) => item.checked)
+      .map((item) => item.title);
+
+    if (selectedTodos.length === 0) {
+      alert('추가할 할 일을 선택해주세요.');
+      return;
+    }
+
+    onAddAiTodos(selectedTodos);
+    alert(`${selectedTodos.length}개의 할 일을 추가했습니다.`);
+    onChangePage('home');
+  };
+
   return (
     <main className="ai-todo-page">
       <div className="ai-todo-container">
@@ -24,56 +127,59 @@ function AiTodoPage({ onChangePage }) {
           <input
             className="ai-goal-input"
             type="text"
-            defaultValue="정보처리기사 필기 공부하기"
+            value={goal}
             placeholder="예: 정보처리기사 실기 준비하기"
+            onChange={(event) => setGoal(event.target.value)}
           />
 
           <div className="ai-period-list">
-            <button className="active">오늘</button>
-            <button>이번 주</button>
-            <button>직접 입력</button>
+            <button
+              className={period === 'today' ? 'active' : ''}
+              onClick={() => setPeriod('today')}
+            >
+              오늘
+            </button>
+
+            <button
+              className={period === 'week' ? 'active' : ''}
+              onClick={() => setPeriod('week')}
+            >
+              이번 주
+            </button>
+
+            <button
+              className={period === 'custom' ? 'active' : ''}
+              onClick={() => setPeriod('custom')}
+            >
+              직접 입력
+            </button>
           </div>
 
-          <button className="ai-generate-button">AI 추천 받기</button>
+          <button className="ai-generate-button" onClick={handleGenerateTodos}>
+            AI 추천 받기
+          </button>
         </section>
 
         <section className="ai-result-section">
           <h2>추천된 할 일</h2>
 
           <div className="ai-result-card">
-            <label className="ai-todo-item">
-              <input type="checkbox" defaultChecked />
-              <span>운영체제 프로세스와 스레드 개념 정리</span>
-            </label>
-
-            <label className="ai-todo-item">
-              <input type="checkbox" defaultChecked />
-              <span>데이터베이스 정규화 1~3정규형 복습</span>
-            </label>
-
-            <label className="ai-todo-item">
-              <input type="checkbox" />
-              <span>네트워크 TCP/IP 계층 구조 암기</span>
-            </label>
-
-            <label className="ai-todo-item">
-              <input type="checkbox" />
-              <span>소프트웨어 공학 UML 다이어그램 보기</span>
-            </label>
-
-            <label className="ai-todo-item">
-              <input type="checkbox" defaultChecked />
-              <span>필기 기출문제 20문제 풀기</span>
-            </label>
-
-            <label className="ai-todo-item">
-              <input type="checkbox" />
-              <span>오답노트 정리하기</span>
-            </label>
+            {recommendItems.map((item) => (
+              <label className="ai-todo-item" key={item.id}>
+                <input
+                  type="checkbox"
+                  checked={item.checked}
+                  onChange={() => handleChangeChecked(item.id)}
+                />
+                <span>{item.title}</span>
+              </label>
+            ))}
           </div>
         </section>
 
-        <button className="ai-add-button">선택한 할 일 추가</button>
+        <button className="ai-add-button" onClick={handleAddSelectedTodos}>
+          선택한 할 일 추가
+        </button>
       </div>
     </main>
   );
