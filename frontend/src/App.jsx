@@ -11,6 +11,7 @@ import LoginPage from './pages/LoginPage';
 import MyPage from './pages/MyPage';
 
 const STORAGE_KEY = 'todoSections';
+const AUTH_STORAGE_KEY = 'isLoggedIn';
 
 const DEFAULT_CATEGORY_IDS = ['selfCare', 'study', 'prepare'];
 
@@ -125,6 +126,10 @@ const PAGE_PATHS = {
   login: '/login',
 };
 
+function getSavedLoginStatus() {
+  return localStorage.getItem(AUTH_STORAGE_KEY) === 'true';
+}
+
 function getSavedTodoSections() {
   const savedTodos = localStorage.getItem(STORAGE_KEY);
 
@@ -146,7 +151,7 @@ function App() {
 function AppRoutes() {
   const navigate = useNavigate();
 
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(getSavedLoginStatus);
   const [todoSections, setTodoSections] = useState(getSavedTodoSections);
   const [friendRequests, setFriendRequests] = useState(INITIAL_FRIEND_REQUESTS);
   const [friends, setFriends] = useState(INITIAL_FRIENDS);
@@ -155,6 +160,10 @@ function AppRoutes() {
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(todoSections));
   }, [todoSections]);
+
+  useEffect(() => {
+    localStorage.setItem(AUTH_STORAGE_KEY, String(isLoggedIn));
+  }, [isLoggedIn]);
 
   const handleChangePage = (pageName) => {
     const path = PAGE_PATHS[pageName] || '/';
