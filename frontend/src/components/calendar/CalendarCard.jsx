@@ -1,6 +1,71 @@
 import './CalendarCard.css';
 
-function CalendarCard() {
+const CALENDAR_DAYS = [
+  null,
+  null,
+  null,
+  null,
+  1,
+  2,
+  3,
+  4,
+  5,
+  6,
+  7,
+  8,
+  9,
+  10,
+  11,
+  12,
+  13,
+  14,
+  15,
+  16,
+  17,
+  18,
+  19,
+  20,
+  21,
+  22,
+  23,
+  24,
+  25,
+  26,
+  27,
+  28,
+  29,
+  30,
+  31,
+];
+
+function CalendarCard({ selectedDate, onSelectDate }) {
+  const getDateValue = (day) => `2026-05-${String(day).padStart(2, '0')}`;
+
+  const getDayClassName = (day, index) => {
+    const classNames = [];
+
+    const dateValue = getDateValue(day);
+    const dayOfWeek = index % 7;
+
+    if (dateValue === selectedDate) {
+      classNames.push('selected');
+    }
+
+    if (day === 22) {
+      classNames.push('today');
+    }
+
+    if (dayOfWeek === 5) {
+      classNames.push('saturday');
+    }
+
+    if (dayOfWeek === 6) {
+      classNames.push('sunday');
+    }
+
+    return classNames.join(' ');
+  };
+
   return (
     <div className="calendar-card">
       <div className="calendar-title-row">
@@ -19,45 +84,22 @@ function CalendarCard() {
       </div>
 
       <div className="calendar-grid">
-        <span></span>
-        <span></span>
-        <span></span>
-        <span></span>
-        <button className="selected">1</button>
-        <button className="saturday">2</button>
-        <button className="sunday">3</button>
+        {CALENDAR_DAYS.map((day, index) => {
+          if (!day) {
+            return <span key={`empty-${index}`}></span>;
+          }
 
-        <button>4</button>
-        <button>5</button>
-        <button>6</button>
-        <button>7</button>
-        <button>8</button>
-        <button className="saturday">9</button>
-        <button className="sunday">10</button>
-
-        <button>11</button>
-        <button>12</button>
-        <button>13</button>
-        <button>14</button>
-        <button>15</button>
-        <button className="saturday">16</button>
-        <button className="sunday">17</button>
-
-        <button>18</button>
-        <button>19</button>
-        <button>20</button>
-        <button>21</button>
-        <button className="today">22</button>
-        <button className="saturday">23</button>
-        <button className="sunday">24</button>
-
-        <button>25</button>
-        <button>26</button>
-        <button>27</button>
-        <button>28</button>
-        <button>29</button>
-        <button className="saturday">30</button>
-        <button className="sunday">31</button>
+          return (
+            <button
+              type="button"
+              className={getDayClassName(day, index)}
+              key={day}
+              onClick={() => onSelectDate(getDateValue(day))}
+            >
+              {day}
+            </button>
+          );
+        })}
       </div>
     </div>
   );

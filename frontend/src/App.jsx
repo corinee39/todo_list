@@ -12,6 +12,7 @@ import MyPage from './pages/MyPage';
 
 const STORAGE_KEY = 'todoSections';
 const AUTH_STORAGE_KEY = 'isLoggedIn';
+const DEFAULT_TODO_DATE = '2026-05-22';
 
 const DEFAULT_CATEGORY_IDS = ['selfCare', 'study', 'prepare'];
 
@@ -25,11 +26,13 @@ const INITIAL_TODO_SECTIONS = [
         id: 'self-1',
         title: '아침명상 / 기도 / 스트레칭',
         completed: false,
+        todoDate: DEFAULT_TODO_DATE,
       },
       {
         id: 'self-2',
         title: '유산균, 비타민C',
         completed: false,
+        todoDate: DEFAULT_TODO_DATE,
       },
     ],
   },
@@ -42,11 +45,13 @@ const INITIAL_TODO_SECTIONS = [
         id: 'study-1',
         title: '정보처리기사 필기 기출 풀이',
         completed: false,
+        todoDate: DEFAULT_TODO_DATE,
       },
       {
         id: 'study-2',
         title: '오답노트 정리하기',
         completed: false,
+        todoDate: DEFAULT_TODO_DATE,
       },
     ],
   },
@@ -59,11 +64,13 @@ const INITIAL_TODO_SECTIONS = [
         id: 'prepare-1',
         title: '수험표, 신분증 챙기기',
         completed: false,
+        todoDate: DEFAULT_TODO_DATE,
       },
       {
         id: 'prepare-2',
         title: '스터디 참여하기',
         completed: false,
+        todoDate: DEFAULT_TODO_DATE,
       },
     ],
   },
@@ -130,6 +137,27 @@ function getSavedLoginStatus() {
   return localStorage.getItem(AUTH_STORAGE_KEY) === 'true';
 }
 
+function normalizeTodoSections(sections) {
+  return sections.map((section) => ({
+    ...section,
+    todos: section.todos.map((todo, index) => {
+      if (typeof todo === 'string') {
+        return {
+          id: `${section.id}-${index}`,
+          title: todo,
+          completed: false,
+          todoDate: DEFAULT_TODO_DATE,
+        };
+      }
+
+      return {
+        ...todo,
+        todoDate: todo.todoDate || DEFAULT_TODO_DATE,
+      };
+    }),
+  }));
+}
+
 function getSavedTodoSections() {
   const savedTodos = localStorage.getItem(STORAGE_KEY);
 
@@ -138,7 +166,7 @@ function getSavedTodoSections() {
   }
 
   try {
-    return JSON.parse(savedTodos);
+    return normalizeTodoSections(JSON.parse(savedTodos));
   } catch (error) {
     return INITIAL_TODO_SECTIONS;
   }
@@ -152,6 +180,7 @@ function AppRoutes() {
   const navigate = useNavigate();
 
   const [isLoggedIn, setIsLoggedIn] = useState(getSavedLoginStatus);
+  const [selectedDate, setSelectedDate] = useState(DEFAULT_TODO_DATE);
   const [todoSections, setTodoSections] = useState(getSavedTodoSections);
   const [friendRequests, setFriendRequests] = useState(INITIAL_FRIEND_REQUESTS);
   const [friends, setFriends] = useState(INITIAL_FRIENDS);
@@ -164,6 +193,11 @@ function AppRoutes() {
   useEffect(() => {
     localStorage.setItem(AUTH_STORAGE_KEY, String(isLoggedIn));
   }, [isLoggedIn]);
+
+  const filteredTodoSections = todoSections.map((section) => ({
+    ...section,
+    todos: section.todos.filter((todo) => todo.todoDate === selectedDate),
+  }));
 
   const handleChangePage = (pageName) => {
     const path = PAGE_PATHS[pageName] || '/';
@@ -213,6 +247,7 @@ function AppRoutes() {
       id: `${sectionId}-${Date.now()}`,
       title: todoTitle,
       completed: false,
+      todoDate: selectedDate,
     };
 
     setTodoSections((prevSections) =>
@@ -234,6 +269,7 @@ function AppRoutes() {
       id: `ai-${Date.now()}-${index}`,
       title: todo,
       completed: false,
+      todoDate: selectedDate,
     }));
 
     setTodoSections((prevSections) =>
@@ -353,7 +389,9 @@ function AppRoutes() {
           <HomePage
             onChangePage={handleChangePage}
             onLogout={handleLogout}
-            todoSections={todoSections}
+            selectedDate={selectedDate}
+            onSelectDate={setSelectedDate}
+            todoSections={filteredTodoSections}
             onAddTodo={handleAddTodo}
             onToggleTodo={handleToggleTodo}
             onDeleteTodo={handleDeleteTodo}

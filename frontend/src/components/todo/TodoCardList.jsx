@@ -1,7 +1,13 @@
 import { useState } from 'react';
 import './TodoCardList.css';
 
-function TodoCardList({ todoSections, onAddTodo, onToggleTodo, onDeleteTodo }) {
+function TodoCardList({
+  selectedDate,
+  todoSections,
+  onAddTodo,
+  onToggleTodo,
+  onDeleteTodo,
+}) {
   const [inputValues, setInputValues] = useState({});
 
   const handleChangeInput = (sectionId, value) => {
@@ -30,33 +36,48 @@ function TodoCardList({ todoSections, onAddTodo, onToggleTodo, onDeleteTodo }) {
 
   return (
     <div className="todo-card-list">
+      <div className="todo-list-header">
+        <div>
+          <h2>선택 날짜 할 일</h2>
+          <p>{selectedDate}</p>
+        </div>
+      </div>
+
       {todoSections.map((section) => (
         <article className={`todo-card ${section.theme}`} key={section.id}>
           <h3>{section.title}</h3>
 
           <div className="todo-list">
-            {section.todos.map((todo) => (
-              <div
-                className={`todo-item-row ${todo.completed ? 'completed' : ''}`}
-                key={todo.id}
-              >
-                <label className="todo-item">
-                  <input
-                    type="checkbox"
-                    checked={todo.completed}
-                    onChange={() => onToggleTodo(section.id, todo.id)}
-                  />
-                  <span>{todo.title}</span>
-                </label>
-
-                <button
-                  className="todo-delete-button"
-                  onClick={() => onDeleteTodo(section.id, todo.id)}
+            {section.todos.length === 0 ? (
+              <p className="todo-empty-message">
+                선택한 날짜의 할 일이 없습니다.
+              </p>
+            ) : (
+              section.todos.map((todo) => (
+                <div
+                  className={`todo-item-row ${
+                    todo.completed ? 'completed' : ''
+                  }`}
+                  key={todo.id}
                 >
-                  삭제
-                </button>
-              </div>
-            ))}
+                  <label className="todo-item">
+                    <input
+                      type="checkbox"
+                      checked={todo.completed}
+                      onChange={() => onToggleTodo(section.id, todo.id)}
+                    />
+                    <span>{todo.title}</span>
+                  </label>
+
+                  <button
+                    className="todo-delete-button"
+                    onClick={() => onDeleteTodo(section.id, todo.id)}
+                  >
+                    삭제
+                  </button>
+                </div>
+              ))
+            )}
           </div>
 
           <form

@@ -71,12 +71,12 @@
   transform: translateX(-50%);
 }
 
-.calendar-grid .selected {
+.calendar-grid button.selected {
   background-color: #222;
-  color: #fff;
+  color: #fff !important;
 }
 
-.calendar-grid .today {
+.calendar-grid button.today:not(.selected) {
   background-color: #ded9ff;
   color: #5f45d8;
 }

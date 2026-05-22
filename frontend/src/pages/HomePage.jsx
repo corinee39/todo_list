@@ -11,6 +11,8 @@ import './HomePage.css';
 function HomePage({
   onChangePage,
   onLogout,
+  selectedDate,
+  onSelectDate,
   todoSections,
   onAddTodo,
   onToggleTodo,
@@ -30,9 +32,13 @@ function HomePage({
       <TimerCard />
 
       <section className="dashboard">
-        <CalendarCard />
+        <CalendarCard
+          selectedDate={selectedDate}
+          onSelectDate={onSelectDate}
+        />
 
         <TodoCardList
+          selectedDate={selectedDate}
           todoSections={todoSections}
           onAddTodo={onAddTodo}
           onToggleTodo={onToggleTodo}
