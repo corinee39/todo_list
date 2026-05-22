@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import AiTodoPage from './pages/AiTodoPage';
 import CategoryCreatePage from './pages/CategoryCreatePage';
 import CategoryManagePage from './pages/CategoryManagePage';
+import FriendListPage from './pages/FriendListPage';
 import FriendRequestPage from './pages/FriendRequestPage';
 import HomePage from './pages/HomePage';
 
@@ -244,6 +245,18 @@ function App() {
     );
   };
 
+  const handleDeleteFriend = (friendId) => {
+    const isConfirmed = confirm('이 친구를 삭제할까요?');
+
+    if (!isConfirmed) {
+      return;
+    }
+
+    setFriends((prevFriends) =>
+      prevFriends.filter((friend) => friend.id !== friendId)
+    );
+  };
+
   if (currentPage === 'aiTodo') {
     return (
       <AiTodoPage
@@ -280,6 +293,16 @@ function App() {
         friends={friends}
         onAcceptFriendRequest={handleAcceptFriendRequest}
         onRejectFriendRequest={handleRejectFriendRequest}
+      />
+    );
+  }
+
+  if (currentPage === 'friendList') {
+    return (
+      <FriendListPage
+        onChangePage={setCurrentPage}
+        friends={friends}
+        onDeleteFriend={handleDeleteFriend}
       />
     );
   }

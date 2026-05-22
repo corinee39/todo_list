@@ -21,6 +21,11 @@ function SideMenu({ isOpen, onClose, onChangePage }) {
     onClose();
   };
 
+  const handleMoveFriendListPage = () => {
+    onChangePage('friendList');
+    onClose();
+  };
+
   return (
     <div className={`side-menu-overlay ${isOpen ? 'open' : ''}`}>
       <aside className="side-menu">
@@ -53,7 +58,7 @@ function SideMenu({ isOpen, onClose, onChangePage }) {
           <div className="side-menu-section">
             <p className="side-menu-section-title">친구</p>
             <button onClick={handleMoveFriendRequestPage}>👥 친구 요청</button>
-            <button>🙂 친구 목록</button>
+            <button onClick={handleMoveFriendListPage}>🙂 친구 목록</button>
           </div>
 
           <div className="side-menu-section">
