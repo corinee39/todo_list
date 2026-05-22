@@ -1,4 +1,5 @@
 import CalendarCard from '../components/calendar/CalendarCard';
+import BottomNav from '../components/layout/BottomNav';
 import HomeHeader from '../components/layout/HomeHeader';
 import TimerCard from '../components/timer/TimerCard';
 import TodoCardList from '../components/todo/TodoCardList';
@@ -15,6 +16,8 @@ function HomePage() {
         <CalendarCard />
         <TodoCardList />
       </section>
+
+      <BottomNav />
     </main>
   );
 }
