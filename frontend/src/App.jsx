@@ -5,7 +5,7 @@ import {
   deleteTodoCategory,
   getTodoCategories,
 } from './api/categoryApi';
-import { createTodo, deleteTodo, getTodosByDate } from './api/todoApi';
+import { createTodo, deleteTodo, getTodosByDate, updateTodo } from './api/todoApi';
 import AiTodoPage from './pages/AiTodoPage';
 import BoardPage from './pages/BoardPage';
 import CategoryCreatePage from './pages/CategoryCreatePage';
@@ -118,6 +118,9 @@ function convertTodoFromBackend(todo, selectedDate) {
     todoId: todo.todoId ?? todo.id,
     categoryId: todo.categoryId,
     title: todo.title,
+    content: todo.content || '',
+    status: todo.status || 'WAITING',
+    priority: todo.priority || 'MEDIUM',
     completed:
       todo.completed === true ||
       todo.status === 'DONE' ||
@@ -299,23 +302,40 @@ function AppRoutes() {
     }
   };
 
-  const handleToggleTodo = (sectionId, todoId) => {
-    setTodoSections((prevSections) =>
-      prevSections.map((section) => {
-        if (section.id !== sectionId) {
-          return section;
-        }
+  const handleToggleTodo = async (sectionId, todoId) => {
+    const targetSection = todoSections.find((section) => section.id === sectionId);
 
-        return {
-          ...section,
-          todos: section.todos.map((todo) =>
-            String(todo.id) === String(todoId)
-              ? { ...todo, completed: !todo.completed }
-              : todo
-          ),
-        };
-      })
+    if (!targetSection) {
+      alert('카테고리 정보를 찾을 수 없습니다.');
+      return;
+    }
+
+    const targetTodo = targetSection.todos.find(
+      (todo) => String(todo.id) === String(todoId)
     );
+
+    if (!targetTodo) {
+      alert('할 일 정보를 찾을 수 없습니다.');
+      return;
+    }
+
+    const nextStatus = targetTodo.completed ? 'WAITING' : 'DONE';
+
+    try {
+      await updateTodo(targetTodo.todoId || targetTodo.id, {
+        categoryId: targetTodo.categoryId,
+        title: targetTodo.title,
+        content: targetTodo.content || '',
+        todoDate: targetTodo.todoDate,
+        status: nextStatus,
+        priority: targetTodo.priority || 'MEDIUM',
+      });
+
+      await loadCategoriesAndTodos(selectedDate);
+    } catch (error) {
+      console.error('할 일 상태 변경 실패:', error);
+      alert('할 일 상태 변경에 실패했습니다.');
+    }
   };
 
   const handleDeleteTodo = async (sectionId, todoId) => {
