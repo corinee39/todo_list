@@ -1,6 +1,11 @@
 import { useEffect, useState } from 'react';
 import { Navigate, Route, Routes, useNavigate } from 'react-router';
-import { createTodo, getTodosByDate } from './api/todoApi';
+import {
+  createTodoCategory,
+  deleteTodoCategory,
+  getTodoCategories,
+} from './api/categoryApi';
+import { createTodo, deleteTodo, getTodosByDate } from './api/todoApi';
 import AiTodoPage from './pages/AiTodoPage';
 import BoardPage from './pages/BoardPage';
 import CategoryCreatePage from './pages/CategoryCreatePage';
@@ -11,77 +16,10 @@ import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
 import MyPage from './pages/MyPage';
 
-const STORAGE_KEY = 'todoSections';
 const AUTH_STORAGE_KEY = 'isLoggedIn';
 const DEFAULT_TODO_DATE = '2026-05-22';
 
-const DEFAULT_CATEGORY_IDS = ['selfCare', 'study', 'prepare'];
-
-const CATEGORY_ID_MAP = {
-  selfCare: 1,
-  study: 2,
-  prepare: 3,
-};
-
-const INITIAL_TODO_SECTIONS = [
-  {
-    id: 'selfCare',
-    title: '나를 사랑하고 돌보기',
-    theme: 'pink',
-    todos: [
-      {
-        id: 'self-1',
-        title: '아침명상 / 기도 / 스트레칭',
-        completed: false,
-        todoDate: DEFAULT_TODO_DATE,
-      },
-      {
-        id: 'self-2',
-        title: '유산균, 비타민C',
-        completed: false,
-        todoDate: DEFAULT_TODO_DATE,
-      },
-    ],
-  },
-  {
-    id: 'study',
-    title: '공부',
-    theme: 'yellow',
-    todos: [
-      {
-        id: 'study-1',
-        title: '정보처리기사 필기 기출 풀이',
-        completed: false,
-        todoDate: DEFAULT_TODO_DATE,
-      },
-      {
-        id: 'study-2',
-        title: '오답노트 정리하기',
-        completed: false,
-        todoDate: DEFAULT_TODO_DATE,
-      },
-    ],
-  },
-  {
-    id: 'prepare',
-    title: '대화와 준비',
-    theme: 'green',
-    todos: [
-      {
-        id: 'prepare-1',
-        title: '수험표, 신분증 챙기기',
-        completed: false,
-        todoDate: DEFAULT_TODO_DATE,
-      },
-      {
-        id: 'prepare-2',
-        title: '스터디 참여하기',
-        completed: false,
-        todoDate: DEFAULT_TODO_DATE,
-      },
-    ],
-  },
-];
+const CATEGORY_THEMES = ['yellow', 'pink', 'green', 'purple', 'blue'];
 
 const INITIAL_FRIEND_REQUESTS = [
   {
@@ -144,39 +82,48 @@ function getSavedLoginStatus() {
   return localStorage.getItem(AUTH_STORAGE_KEY) === 'true';
 }
 
-function normalizeTodoSections(sections) {
-  return sections.map((section) => ({
-    ...section,
-    todos: section.todos.map((todo, index) => {
-      if (typeof todo === 'string') {
-        return {
-          id: `${section.id}-${index}`,
-          title: todo,
-          completed: false,
-          todoDate: DEFAULT_TODO_DATE,
-        };
-      }
+function getArrayData(data) {
+  if (Array.isArray(data)) {
+    return data;
+  }
 
-      return {
-        ...todo,
-        todoDate: todo.todoDate || DEFAULT_TODO_DATE,
-      };
-    }),
-  }));
+  if (Array.isArray(data?.items)) {
+    return data.items;
+  }
+
+  if (Array.isArray(data?.data)) {
+    return data.data;
+  }
+
+  if (Array.isArray(data?.content)) {
+    return data.content;
+  }
+
+  return [];
 }
 
-function getSavedTodoSections() {
-  const savedTodos = localStorage.getItem(STORAGE_KEY);
+function convertCategoryToSection(category, index, selectedTheme) {
+  return {
+    id: String(category.categoryId ?? category.id),
+    categoryId: category.categoryId ?? category.id,
+    title: category.name ?? category.title,
+    theme: selectedTheme || CATEGORY_THEMES[index % CATEGORY_THEMES.length],
+    todos: [],
+  };
+}
 
-  if (!savedTodos) {
-    return INITIAL_TODO_SECTIONS;
-  }
-
-  try {
-    return normalizeTodoSections(JSON.parse(savedTodos));
-  } catch (error) {
-    return INITIAL_TODO_SECTIONS;
-  }
+function convertTodoFromBackend(todo, selectedDate) {
+  return {
+    id: String(todo.todoId ?? todo.id),
+    todoId: todo.todoId ?? todo.id,
+    categoryId: todo.categoryId,
+    title: todo.title,
+    completed:
+      todo.completed === true ||
+      todo.status === 'DONE' ||
+      Boolean(todo.completedAt),
+    todoDate: todo.todoDate?.slice(0, 10) || selectedDate,
+  };
 }
 
 function App() {
@@ -188,36 +135,53 @@ function AppRoutes() {
 
   const [isLoggedIn, setIsLoggedIn] = useState(getSavedLoginStatus);
   const [selectedDate, setSelectedDate] = useState(DEFAULT_TODO_DATE);
-  const [todoSections, setTodoSections] = useState(getSavedTodoSections);
+  const [todoSections, setTodoSections] = useState([]);
   const [friendRequests, setFriendRequests] = useState(INITIAL_FRIEND_REQUESTS);
   const [friends, setFriends] = useState(INITIAL_FRIENDS);
   const [boardPosts, setBoardPosts] = useState(INITIAL_BOARD_POSTS);
-
-  useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(todoSections));
-  }, [todoSections]);
 
   useEffect(() => {
     localStorage.setItem(AUTH_STORAGE_KEY, String(isLoggedIn));
   }, [isLoggedIn]);
 
   useEffect(() => {
-    async function fetchTodosFromBackend() {
-      try {
-        const todos = await getTodosByDate(selectedDate);
-        console.log('백엔드 투두 조회 결과:', todos);
-      } catch (error) {
-        console.error('백엔드 투두 조회 실패:', error);
-      }
+    if (!isLoggedIn) {
+      return;
     }
 
-    fetchTodosFromBackend();
-  }, [selectedDate]);
+    loadCategoriesAndTodos(selectedDate);
+  }, [isLoggedIn, selectedDate]);
 
-  const filteredTodoSections = todoSections.map((section) => ({
-    ...section,
-    todos: section.todos.filter((todo) => todo.todoDate === selectedDate),
-  }));
+  const loadCategoriesAndTodos = async (date) => {
+    try {
+      const [categoryResult, todoResult] = await Promise.all([
+        getTodoCategories(),
+        getTodosByDate(date),
+      ]);
+
+      const categories = getArrayData(categoryResult);
+      const todos = getArrayData(todoResult).map((todo) =>
+        convertTodoFromBackend(todo, date)
+      );
+
+      const sections = categories.map((category, index) => {
+        const section = convertCategoryToSection(category, index);
+        const sectionTodos = todos.filter(
+          (todo) => Number(todo.categoryId) === Number(section.categoryId)
+        );
+
+        return {
+          ...section,
+          todos: sectionTodos,
+        };
+      });
+
+      setTodoSections(sections);
+      console.log('백엔드 카테고리/투두 조회 결과:', sections);
+    } catch (error) {
+      console.error('백엔드 카테고리/투두 조회 실패:', error);
+    }
+  };
 
   const handleChangePage = (pageName) => {
     const path = PAGE_PATHS[pageName] || '/';
@@ -240,39 +204,56 @@ function AppRoutes() {
     navigate('/login');
   };
 
-  const handleAddCategory = ({ title, theme }) => {
-    const newCategory = {
-      id: `category-${Date.now()}`,
-      title,
-      theme,
-      todos: [],
+  const handleAddCategory = async ({ title, theme }) => {
+    const savedCategory = await createTodoCategory({
+      name: title,
+    });
+
+    const category = {
+      ...savedCategory,
+      name: savedCategory?.name || title,
     };
 
-    setTodoSections((prevSections) => [...prevSections, newCategory]);
+    setTodoSections((prevSections) => [
+      ...prevSections,
+      convertCategoryToSection(category, prevSections.length, theme),
+    ]);
   };
 
-  const handleDeleteCategory = (sectionId) => {
-    if (DEFAULT_CATEGORY_IDS.includes(sectionId)) {
-      alert('기본 카테고리는 삭제할 수 없습니다.');
+  const handleDeleteCategory = async (sectionId) => {
+    const targetSection = todoSections.find((section) => section.id === sectionId);
+
+    if (!targetSection?.categoryId) {
+      alert('삭제할 카테고리 정보를 찾을 수 없습니다.');
       return;
     }
 
-    setTodoSections((prevSections) =>
-      prevSections.filter((section) => section.id !== sectionId)
-    );
+    const isConfirmed = confirm('이 카테고리를 삭제할까요?');
+
+    if (!isConfirmed) {
+      return;
+    }
+
+    try {
+      await deleteTodoCategory(targetSection.categoryId);
+      await loadCategoriesAndTodos(selectedDate);
+    } catch (error) {
+      console.error(error);
+      alert('카테고리 삭제에 실패했습니다.');
+    }
   };
 
   const handleAddTodo = async (sectionId, todoTitle) => {
-    const categoryId = CATEGORY_ID_MAP[sectionId];
+    const targetSection = todoSections.find((section) => section.id === sectionId);
 
-    if (!categoryId) {
-      alert('백엔드에 연결된 기본 카테고리만 먼저 테스트할 수 있습니다.');
+    if (!targetSection?.categoryId) {
+      alert('카테고리 정보를 찾을 수 없습니다.');
       return;
     }
 
     try {
       const savedTodo = await createTodo({
-        categoryId,
+        categoryId: targetSection.categoryId,
         title: todoTitle,
         content: '',
         todoDate: selectedDate,
@@ -281,51 +262,41 @@ function AppRoutes() {
 
       console.log('백엔드 투두 등록 결과:', savedTodo);
 
-      const newTodo = {
-        id: savedTodo?.todoId || savedTodo?.id || `${sectionId}-${Date.now()}`,
-        title: savedTodo?.title || todoTitle,
-        completed: false,
-        todoDate: savedTodo?.todoDate || selectedDate,
-      };
-
-      setTodoSections((prevSections) =>
-        prevSections.map((section) => {
-          if (section.id !== sectionId) {
-            return section;
-          }
-
-          return {
-            ...section,
-            todos: [...section.todos, newTodo],
-          };
-        })
-      );
+      await loadCategoriesAndTodos(selectedDate);
     } catch (error) {
       console.error('백엔드 투두 등록 실패:', error);
       alert('할 일 등록에 실패했습니다. 백엔드 로그를 확인해주세요.');
     }
   };
 
-  const handleAddAiTodos = (selectedTodos) => {
-    const newTodos = selectedTodos.map((todo, index) => ({
-      id: `ai-${Date.now()}-${index}`,
-      title: todo,
-      completed: false,
-      todoDate: selectedDate,
-    }));
+  const handleAddAiTodos = async (selectedTodos) => {
+    const studySection =
+      todoSections.find((section) => section.title.includes('공부')) ||
+      todoSections[0];
 
-    setTodoSections((prevSections) =>
-      prevSections.map((section) => {
-        if (section.id !== 'study') {
-          return section;
-        }
+    if (!studySection?.categoryId) {
+      alert('AI 할 일을 추가할 카테고리가 없습니다. 먼저 카테고리를 등록해주세요.');
+      return;
+    }
 
-        return {
-          ...section,
-          todos: [...section.todos, ...newTodos],
-        };
-      })
-    );
+    try {
+      await Promise.all(
+        selectedTodos.map((todoTitle) =>
+          createTodo({
+            categoryId: studySection.categoryId,
+            title: todoTitle,
+            content: '',
+            todoDate: selectedDate,
+            priority: 'MEDIUM',
+          })
+        )
+      );
+
+      await loadCategoriesAndTodos(selectedDate);
+    } catch (error) {
+      console.error(error);
+      alert('AI 할 일 추가에 실패했습니다.');
+    }
   };
 
   const handleToggleTodo = (sectionId, todoId) => {
@@ -338,7 +309,7 @@ function AppRoutes() {
         return {
           ...section,
           todos: section.todos.map((todo) =>
-            todo.id === todoId
+            String(todo.id) === String(todoId)
               ? { ...todo, completed: !todo.completed }
               : todo
           ),
@@ -347,19 +318,20 @@ function AppRoutes() {
     );
   };
 
-  const handleDeleteTodo = (sectionId, todoId) => {
-    setTodoSections((prevSections) =>
-      prevSections.map((section) => {
-        if (section.id !== sectionId) {
-          return section;
-        }
+  const handleDeleteTodo = async (sectionId, todoId) => {
+    const isConfirmed = confirm('이 할 일을 삭제할까요?');
 
-        return {
-          ...section,
-          todos: section.todos.filter((todo) => todo.id !== todoId),
-        };
-      })
-    );
+    if (!isConfirmed) {
+      return;
+    }
+
+    try {
+      await deleteTodo(todoId);
+      await loadCategoriesAndTodos(selectedDate);
+    } catch (error) {
+      console.error(error);
+      alert('할 일 삭제에 실패했습니다.');
+    }
   };
 
   const handleAcceptFriendRequest = (requestId) => {
@@ -433,7 +405,7 @@ function AppRoutes() {
             onLogout={handleLogout}
             selectedDate={selectedDate}
             onSelectDate={setSelectedDate}
-            todoSections={filteredTodoSections}
+            todoSections={todoSections}
             onAddTodo={handleAddTodo}
             onToggleTodo={handleToggleTodo}
             onDeleteTodo={handleDeleteTodo}

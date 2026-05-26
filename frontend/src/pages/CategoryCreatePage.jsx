@@ -4,8 +4,9 @@ import './CategoryCreatePage.css';
 function CategoryCreatePage({ onChangePage, onAddCategory }) {
   const [categoryName, setCategoryName] = useState('');
   const [theme, setTheme] = useState('purple');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
 
     const trimmedName = categoryName.trim();
@@ -15,13 +16,22 @@ function CategoryCreatePage({ onChangePage, onAddCategory }) {
       return;
     }
 
-    onAddCategory({
-      title: trimmedName,
-      theme,
-    });
+    try {
+      setIsSubmitting(true);
 
-    alert('카테고리가 등록되었습니다.');
-    onChangePage('home');
+      await onAddCategory({
+        title: trimmedName,
+        theme,
+      });
+
+      alert('카테고리가 등록되었습니다.');
+      onChangePage('home');
+    } catch (error) {
+      console.error(error);
+      alert('카테고리 등록에 실패했습니다. 백엔드 로그를 확인해주세요.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -98,8 +108,12 @@ function CategoryCreatePage({ onChangePage, onAddCategory }) {
             </div>
           </div>
 
-          <button className="category-submit-button" type="submit">
-            카테고리 등록
+          <button
+            className="category-submit-button"
+            type="submit"
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? '등록 중...' : '카테고리 등록'}
           </button>
         </form>
       </div>
