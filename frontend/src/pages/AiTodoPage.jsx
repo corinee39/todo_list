@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { generateAiTodos } from '../api/aiApi';
 import './AiTodoPage.css';
 
@@ -84,12 +84,19 @@ function convertAiItemsToRecommendItems(items) {
   }));
 }
 
-function AiTodoPage({ onChangePage, onAddAiTodos }) {
+function AiTodoPage({ onChangePage, todoSections, onAddAiTodos }) {
   const [goal, setGoal] = useState('정보처리기사 필기 공부하기');
   const [period, setPeriod] = useState('today');
+  const [selectedCategoryId, setSelectedCategoryId] = useState('');
   const [recommendItems, setRecommendItems] = useState(DEFAULT_RECOMMEND_ITEMS);
   const [isLoading, setIsLoading] = useState(false);
   const [apiMessage, setApiMessage] = useState('');
+
+  useEffect(() => {
+    if (todoSections.length > 0 && !selectedCategoryId) {
+      setSelectedCategoryId(String(todoSections[0].categoryId));
+    }
+  }, [todoSections, selectedCategoryId]);
 
   const handleGenerateTodos = async () => {
     const trimmedGoal = goal.trim();
@@ -122,7 +129,7 @@ function AiTodoPage({ onChangePage, onAddAiTodos }) {
       console.error(error);
       setRecommendItems(getFallbackItems(trimmedGoal));
       setApiMessage(
-        '백엔드 AI API 연결 전이라 임시 추천 목록을 표시했습니다.'
+        '백엔드 AI API 연결 전이거나 응답이 실패해서 임시 추천 목록을 표시했습니다.'
       );
     } finally {
       setIsLoading(false);
@@ -137,7 +144,12 @@ function AiTodoPage({ onChangePage, onAddAiTodos }) {
     );
   };
 
-  const handleAddSelectedTodos = () => {
+  const handleAddSelectedTodos = async () => {
+    if (!selectedCategoryId) {
+      alert('할 일을 추가할 카테고리를 선택해주세요.');
+      return;
+    }
+
     const selectedTodos = recommendItems
       .filter((item) => item.checked)
       .map((item) => item.title);
@@ -147,7 +159,8 @@ function AiTodoPage({ onChangePage, onAddAiTodos }) {
       return;
     }
 
-    onAddAiTodos(selectedTodos);
+    await onAddAiTodos(selectedTodos, Number(selectedCategoryId));
+
     alert(`${selectedTodos.length}개의 할 일을 추가했습니다.`);
     onChangePage('home');
   };
@@ -162,7 +175,7 @@ function AiTodoPage({ onChangePage, onAddAiTodos }) {
 
           <div>
             <h1>AI 할 일 생성</h1>
-            <p>목표를 입력하면 AI가 실천 가능한 할 일로 쪼개줘요.</p>
+            <p>목표를 입력하면 실천 가능한 할 일로 나눠줍니다.</p>
           </div>
         </header>
 
@@ -179,6 +192,25 @@ function AiTodoPage({ onChangePage, onAddAiTodos }) {
             placeholder="예: 정보처리기사 실기 준비하기"
             onChange={(event) => setGoal(event.target.value)}
           />
+
+          <label className="ai-category-select-box">
+            <span>추가할 카테고리</span>
+
+            <select
+              value={selectedCategoryId}
+              onChange={(event) => setSelectedCategoryId(event.target.value)}
+            >
+              {todoSections.length === 0 ? (
+                <option value="">카테고리가 없습니다</option>
+              ) : (
+                todoSections.map((section) => (
+                  <option key={section.categoryId} value={section.categoryId}>
+                    {section.title}
+                  </option>
+                ))
+              )}
+            </select>
+          </label>
 
           <div className="ai-period-list">
             <button
