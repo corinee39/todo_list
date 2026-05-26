@@ -33,7 +33,7 @@ public class TodoController {
     // TODO: 로그인 기능 구현 후 userId는 @AuthenticationPrincipal 또는 JWT 정보에서 가져오도록 변경
     @GetMapping
     public ResponseEntity<List<TodoDTO>> findTodos(
-            @RequestParam Long userId,
+            @RequestParam("userId") Long userId,
             @RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate todoDate
     ) {
         return ResponseEntity.ok(todoService.findTodos(userId, todoDate));
@@ -41,7 +41,7 @@ public class TodoController {
 
     @PostMapping
     public ResponseEntity<TodoDTO> createTodo(
-            @RequestParam Long userId,
+            @RequestParam("userId") Long userId,
             @Valid @RequestBody TodoCreateRequest request
     ) {
         TodoDTO createdTodo = todoService.createTodo(userId, request);
@@ -50,16 +50,16 @@ public class TodoController {
 
     @GetMapping("/{todoId}")
     public ResponseEntity<TodoDTO> findTodo(
-            @RequestParam Long userId,
-            @PathVariable Long todoId
+            @RequestParam("userId") Long userId,
+            @PathVariable("todoId") Long todoId
     ) {
         return ResponseEntity.ok(todoService.findTodo(userId, todoId));
     }
 
     @PostMapping("/{todoId}/update")
     public ResponseEntity<TodoDTO> updateTodo(
-            @RequestParam Long userId,
-            @PathVariable Long todoId,
+            @RequestParam("userId") Long userId,
+            @PathVariable("todoId") Long todoId,
             @Valid @RequestBody TodoUpdateRequest request
     ) {
         return ResponseEntity.ok(todoService.updateTodo(userId, todoId, request));
@@ -67,8 +67,8 @@ public class TodoController {
 
     @PostMapping("/{todoId}/delete")
     public ResponseEntity<Map<String, String>> deleteTodo(
-            @RequestParam Long userId,
-            @PathVariable Long todoId
+            @RequestParam("userId") Long userId,
+            @PathVariable("todoId") Long todoId
     ) {
         todoService.deleteTodo(userId, todoId);
         return ResponseEntity.ok(Map.of("message", "할 일이 삭제되었습니다."));
