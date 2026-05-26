@@ -1,6 +1,10 @@
 # Created by https://www.toptal.com/developers/gitignore/api/java,react,windows,macos,dbeaver
 # Edit at https://www.toptal.com/developers/gitignore?templates=java,react,windows,macos,dbeaver
 
+# Environment variables
+.env
+.env.*
+
 # =========================
 # DBeaver
 # =========================
