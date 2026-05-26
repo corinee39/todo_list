@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Navigate, Route, Routes, useNavigate } from 'react-router';
+import { createTodo, getTodosByDate } from './api/todoApi';
 import AiTodoPage from './pages/AiTodoPage';
 import BoardPage from './pages/BoardPage';
 import CategoryCreatePage from './pages/CategoryCreatePage';
@@ -15,6 +16,12 @@ const AUTH_STORAGE_KEY = 'isLoggedIn';
 const DEFAULT_TODO_DATE = '2026-05-22';
 
 const DEFAULT_CATEGORY_IDS = ['selfCare', 'study', 'prepare'];
+
+const CATEGORY_ID_MAP = {
+  selfCare: 1,
+  study: 2,
+  prepare: 3,
+};
 
 const INITIAL_TODO_SECTIONS = [
   {
@@ -194,6 +201,19 @@ function AppRoutes() {
     localStorage.setItem(AUTH_STORAGE_KEY, String(isLoggedIn));
   }, [isLoggedIn]);
 
+  useEffect(() => {
+    async function fetchTodosFromBackend() {
+      try {
+        const todos = await getTodosByDate(selectedDate);
+        console.log('백엔드 투두 조회 결과:', todos);
+      } catch (error) {
+        console.error('백엔드 투두 조회 실패:', error);
+      }
+    }
+
+    fetchTodosFromBackend();
+  }, [selectedDate]);
+
   const filteredTodoSections = todoSections.map((section) => ({
     ...section,
     todos: section.todos.filter((todo) => todo.todoDate === selectedDate),
@@ -242,26 +262,48 @@ function AppRoutes() {
     );
   };
 
-  const handleAddTodo = (sectionId, todoTitle) => {
-    const newTodo = {
-      id: `${sectionId}-${Date.now()}`,
-      title: todoTitle,
-      completed: false,
-      todoDate: selectedDate,
-    };
+  const handleAddTodo = async (sectionId, todoTitle) => {
+    const categoryId = CATEGORY_ID_MAP[sectionId];
 
-    setTodoSections((prevSections) =>
-      prevSections.map((section) => {
-        if (section.id !== sectionId) {
-          return section;
-        }
+    if (!categoryId) {
+      alert('백엔드에 연결된 기본 카테고리만 먼저 테스트할 수 있습니다.');
+      return;
+    }
 
-        return {
-          ...section,
-          todos: [...section.todos, newTodo],
-        };
-      })
-    );
+    try {
+      const savedTodo = await createTodo({
+        categoryId,
+        title: todoTitle,
+        content: '',
+        todoDate: selectedDate,
+        priority: 'MEDIUM',
+      });
+
+      console.log('백엔드 투두 등록 결과:', savedTodo);
+
+      const newTodo = {
+        id: savedTodo?.todoId || savedTodo?.id || `${sectionId}-${Date.now()}`,
+        title: savedTodo?.title || todoTitle,
+        completed: false,
+        todoDate: savedTodo?.todoDate || selectedDate,
+      };
+
+      setTodoSections((prevSections) =>
+        prevSections.map((section) => {
+          if (section.id !== sectionId) {
+            return section;
+          }
+
+          return {
+            ...section,
+            todos: [...section.todos, newTodo],
+          };
+        })
+      );
+    } catch (error) {
+      console.error('백엔드 투두 등록 실패:', error);
+      alert('할 일 등록에 실패했습니다. 백엔드 로그를 확인해주세요.');
+    }
   };
 
   const handleAddAiTodos = (selectedTodos) => {
