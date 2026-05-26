@@ -7,7 +7,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.bwsy.todolist.dto.TodoCategoryDTO;
 import com.bwsy.todolist.mapper.TodoCategoryMapper;
-import com.bwsy.todolist.validation.TodoCategoryDeleteRequest;
 import com.bwsy.todolist.validation.TodoCategorySaveRequest;
 
 import lombok.RequiredArgsConstructor;
@@ -27,19 +26,19 @@ public class TodoCategoryService {
 
     // 카테고리 등록 메서드
     @Transactional
-    public TodoCategoryDTO createCategory(TodoCategorySaveRequest request) {
-        // 1. userId 검증
-        validateUserId(request.getUserId()); 
+    public TodoCategoryDTO createCategory(Long userId, TodoCategorySaveRequest request) {
+        // 1. JWT에서 가져온 userId 검증
+        validateUserId(userId); 
         // 2. 카테고리명 앞뒤 공백 제거
         String name = normalizeName(request.getName()); 
         // 3. 카테고리명 필수값, 길이 검증
         validateName(name); 
         // 4. 같은 사용자가 동일한 카테고리명을 이미 사용중인지 검사
-        validateDuplicatedName(request.getUserId(), name, null);  
+        validateDuplicatedName(userId, name, null);  
 
         // 5. DB에 저장할 DTO 객체 생성
         TodoCategoryDTO todoCategoryDTO = new TodoCategoryDTO();
-        todoCategoryDTO.setUserId(request.getUserId());
+        todoCategoryDTO.setUserId(userId);
         todoCategoryDTO.setName(name);
 
         // 6. Mapper를 통해 DB에 insert
@@ -48,17 +47,17 @@ public class TodoCategoryService {
         // 7. 등록된 카테고리를 다시 조회해서 반환
         return todoCategoryMapper.findByIdAndUserId(
             todoCategoryDTO.getCategoryId(),
-            request.getUserId()
+            userId
         );
     }
 
     // 카테고리 수정 메서드
     @Transactional
-    public TodoCategoryDTO updateCategory(Long categoryId, TodoCategorySaveRequest request) {
+    public TodoCategoryDTO updateCategory(Long userId, Long categoryId, TodoCategorySaveRequest request) {
         // 1. categoryId 검증
         validateCategoryId(categoryId);
-        // 2. userId 검증
-        validateUserId(request.getUserId());
+        // 2. JWT에서 가져온 userId 검증
+        validateUserId(userId);
         // 3. 카테고리명 공백 제거
         String name = normalizeName(request.getName());
         // 4. 카테고리명 유효성 검증
@@ -67,7 +66,7 @@ public class TodoCategoryService {
         // 5. 해당 카테고리가 존재하고 현재 사용자의 카테고리인지 확인
         TodoCategoryDTO category = todoCategoryMapper.findByIdAndUserId(
             categoryId,
-            request.getUserId()
+            userId
         );
 
         if (category == null) {
@@ -75,12 +74,12 @@ public class TodoCategoryService {
         }
 
         // 6. 카테고리명 중복 검사
-        validateDuplicatedName(request.getUserId(), name, categoryId);
+        validateDuplicatedName(userId, name, categoryId);
         
         // 7. Mapper 통해서 UPDATE
         int result = todoCategoryMapper.updateCategory(
             categoryId, 
-            request.getUserId(), 
+            userId, 
             name
         );
         // update 결과가 0이면 실제 수정된 행이 없다는 뜻
@@ -91,22 +90,22 @@ public class TodoCategoryService {
         // 8. 수정된 카테고리를 다시 조회해서 반환
         return todoCategoryMapper.findByIdAndUserId(
             categoryId, 
-            request.getUserId()
+            userId
         );
     }
 
     // 카테고리 삭제 메서드
     @Transactional
-    public void deleteCategory(Long categoryId, TodoCategoryDeleteRequest request) {
+    public void deleteCategory(Long userId, Long categoryId) {
         // 1. categoryId 검증
         validateCategoryId(categoryId);
         // 2. userId 검증
-        validateUserId(categoryId);
+        validateUserId(userId);
 
         // 3. 삭제하려는 카테고리가 현재 사용자의 카테고리인지 확인
         TodoCategoryDTO category = todoCategoryMapper.findByIdAndUserId(
             categoryId, 
-            request.getUserId()
+            userId
         );
 
         if (category == null) {
@@ -116,7 +115,7 @@ public class TodoCategoryService {
         // 4. Mapper를 통해 status, deleted_at 수정
         int result = todoCategoryMapper.softDeleteCategory(
             categoryId, 
-            request.getUserId()
+            userId
         );
 
         if (result == 0) {
