@@ -26,14 +26,14 @@ function KakaoCallbackPage({ onLoginSuccess }) {
       }
 
       try {
-        await loginWithKakao(code);
+        const loginResult = await loginWithKakao(code);
 
-        // App.jsx의 isLoggedIn 상태를 true로 변경
-        onLoginSuccess();
+        // 로그인 성공 결과를 App.jsx로 전달
+        onLoginSuccess(loginResult);
       } catch (error) {
         console.error(error);
         alert("카카오 로그인에 실패했습니다.");
-        navigate("/login");
+        navigate("/login", { replace: true });
       }
     };
 

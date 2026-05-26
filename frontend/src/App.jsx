@@ -11,6 +11,8 @@ import {
   getTodosByDate,
   updateTodo,
 } from "./api/todoApi";
+import { getMyInfo, logout as logoutAuth } from "./api/authAPI";
+
 import AiTodoPage from "./pages/AiTodoPage";
 import BoardPage from "./pages/BoardPage";
 import CategoryCreatePage from "./pages/CategoryCreatePage";
@@ -150,9 +152,34 @@ function AppRoutes() {
   const [friends, setFriends] = useState(INITIAL_FRIENDS);
   const [boardPosts, setBoardPosts] = useState(INITIAL_BOARD_POSTS);
 
+  const [member, setMember] = useState(null);
+
   useEffect(() => {
     localStorage.setItem(AUTH_STORAGE_KEY, String(isLoggedIn));
   }, [isLoggedIn]);
+
+  // 로그인 상태일 때 내 정보 불러오기
+  useEffect(() => {
+    if (!isLoggedIn) {
+      setMember(null);
+      return;
+    }
+
+    const loadMyInfo = async () => {
+      try {
+        const myInfo = await getMyInfo();
+        setMember(myInfo);
+      } catch (error) {
+        console.error("내 정보 조회 실패:", error);
+
+        logoutAuth();
+        setIsLoggedIn(false);
+        setMember(null);
+        navigate("/login");
+      }
+    };
+    loadMyInfo();
+  }, [isLoggedIn, navigate]);
 
   useEffect(() => {
     if (!isLoggedIn) {
@@ -198,7 +225,10 @@ function AppRoutes() {
     navigate(path);
   };
 
-  const handleLogin = () => {
+  const handleLogin = (loginResult) => {
+    if (loginResult) {
+      setMember(loginResult);
+    }
     setIsLoggedIn(true);
     navigate("/");
   };
@@ -210,6 +240,8 @@ function AppRoutes() {
       return;
     }
 
+    logoutAuth();
+    setMember(null);
     setIsLoggedIn(false);
     navigate("/login");
   };
@@ -436,6 +468,7 @@ function AppRoutes() {
         path="/"
         element={
           <HomePage
+            member={member}
             onChangePage={handleChangePage}
             onLogout={handleLogout}
             selectedDate={selectedDate}

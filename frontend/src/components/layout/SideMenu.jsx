@@ -1,33 +1,35 @@
-import './SideMenu.css';
+import "./SideMenu.css";
 
-function SideMenu({ isOpen, onClose, onChangePage, onLogout }) {
+function SideMenu({ isOpen, onClose, onChangePage, onLogout, member }) {
+  const nickname = member?.nickname || "me";
+
   const handleMoveAiTodoPage = () => {
-    onChangePage('aiTodo');
+    onChangePage("aiTodo");
     onClose();
   };
 
   const handleMoveCategoryCreatePage = () => {
-    onChangePage('categoryCreate');
+    onChangePage("categoryCreate");
     onClose();
   };
 
   const handleMoveCategoryManagePage = () => {
-    onChangePage('categoryManage');
+    onChangePage("categoryManage");
     onClose();
   };
 
   const handleMoveFriendRequestPage = () => {
-    onChangePage('friendRequest');
+    onChangePage("friendRequest");
     onClose();
   };
 
   const handleMoveFriendListPage = () => {
-    onChangePage('friendList');
+    onChangePage("friendList");
     onClose();
   };
 
   const handleMoveBoardPage = () => {
-    onChangePage('board');
+    onChangePage("board");
     onClose();
   };
 
@@ -37,7 +39,7 @@ function SideMenu({ isOpen, onClose, onChangePage, onLogout }) {
   };
 
   return (
-    <div className={`side-menu-overlay ${isOpen ? 'open' : ''}`}>
+    <div className={`side-menu-overlay ${isOpen ? "open" : ""}`}>
       <aside className="side-menu">
         <div className="side-menu-header">
           <h2>메뉴</h2>
@@ -49,7 +51,7 @@ function SideMenu({ isOpen, onClose, onChangePage, onLogout }) {
         <div className="side-menu-profile">
           <div className="side-menu-avatar">me</div>
           <div>
-            <strong>me</strong>
+            <strong>{nickname}</strong>
             <p>오늘도 하나씩 해보자</p>
           </div>
         </div>
