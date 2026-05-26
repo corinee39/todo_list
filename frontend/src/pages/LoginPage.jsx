@@ -1,6 +1,25 @@
-import './LoginPage.css';
+import "./LoginPage.css";
+
+const KAKAO_REST_API_KEY = import.meta.env.VITE_KAKAO_REST_API_KEY;
+const KAKAO_REDIRECT_URI = import.meta.env.VITE_KAKAO_REDIRECT_URI;
 
 function LoginPage({ onLogin }) {
+  // 카카오 로그인 관련 함수
+  const handleKakaoLogin = () => {
+    if (!KAKAO_REST_API_KEY || !KAKAO_REDIRECT_URI) {
+      alert("카카오 로그인 환경변수가 설정되지 않았습니다.");
+      return;
+    }
+
+    const params = new URLSearchParams({
+      response_type: "code",
+      client_id: KAKAO_REST_API_KEY,
+      redirect_uri: KAKAO_REDIRECT_URI,
+    });
+
+    window.location.href = `https://kauth.kakao.com/oauth/authorize?${params.toString()}`;
+  };
+
   return (
     <main className="login-page">
       <section className="login-card">
@@ -16,8 +35,8 @@ function LoginPage({ onLogin }) {
             간단하게 정리해보세요
           </h1>
           <p>
-            할 일 관리, 뽀모도로 타이머, 친구와의 기록 공유를 한 곳에서
-            사용할 수 있습니다.
+            할 일 관리, 뽀모도로 타이머, 친구와의 기록 공유를 한 곳에서 사용할
+            수 있습니다.
           </p>
         </div>
 
@@ -42,7 +61,7 @@ function LoginPage({ onLogin }) {
           <button
             className="social-login-button kakao"
             type="button"
-            onClick={onLogin}
+            onClick={handleKakaoLogin}
           >
             <span className="social-icon">K</span>
             카카오로 시작하기

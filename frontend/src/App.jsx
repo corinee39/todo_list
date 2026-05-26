@@ -20,6 +20,7 @@ import FriendRequestPage from "./pages/FriendRequestPage";
 import HomePage from "./pages/HomePage";
 import LoginPage from "./pages/LoginPage";
 import MyPage from "./pages/MyPage";
+import KakaoCallbackPage from "./pages/KakaoCallbackPage";
 
 const AUTH_STORAGE_KEY = "isLoggedIn";
 const DEFAULT_TODO_DATE = "2026-05-22";
@@ -81,6 +82,7 @@ const PAGE_PATHS = {
   myPage: "/my",
   board: "/board",
   login: "/login",
+  kakaoCallback: "/auth/kakao/callback",
 };
 
 function getSavedLoginStatus() {
@@ -417,6 +419,12 @@ function AppRoutes() {
     return (
       <Routes>
         <Route path="/login" element={<LoginPage onLogin={handleLogin} />} />
+
+        <Route
+          path="/auth/kakao/callback"
+          element={<KakaoCallbackPage onLoginSuccess={handleLogin} />}
+        />
+
         <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>
     );
@@ -512,6 +520,11 @@ function AppRoutes() {
             onAddBoardPost={handleAddBoardPost}
           />
         }
+      />
+
+      <Route
+        path="/auth/kakao/callback"
+        element={<Navigate to="/" replace />}
       />
 
       <Route path="/login" element={<Navigate to="/" replace />} />
