@@ -224,3 +224,12 @@ ON comments(post_id);
 
 CREATE INDEX idx_comments_user
 ON comments(user_id);
+
+/* =========================================================
+   8. 소셜 로그인 provider_id 컬럼 추가
+   ========================================================= */
+
+ALTER TABLE users ADD provider_id VARCHAR2(100);
+
+ALTER TABLE users ADD CONSTRAINT uk_users_provider
+UNIQUE (provider, provider_id);
