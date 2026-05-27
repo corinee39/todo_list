@@ -6,7 +6,7 @@ import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
-import com.bwsy.todolist.dto.TodoDTO;
+import com.bwsy.todolist.dto.todo.TodoDTO;
 
 @Mapper
 public interface TodoMapper {

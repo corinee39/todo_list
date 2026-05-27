@@ -5,7 +5,7 @@
 
 <mapper namespace="com.bwsy.todolist.mapper.TodoCategoryMapper">
 
-    <resultMap id="TodoCategoryResultMap" type="com.bwsy.todolist.dto.TodoCategoryDTO">
+    <resultMap id="TodoCategoryResultMap" type="com.bwsy.todolist.dto.todo.TodoCategoryDTO">
         <id property="categoryId" column="category_id"/>
         <result property="userId" column="user_id"/>
         <result property="name" column="name"/>
@@ -61,7 +61,7 @@
     </select>
 
     <insert id="insertCategory"
-            parameterType="com.bwsy.todolist.dto.TodoCategoryDTO"
+            parameterType="com.bwsy.todolist.dto.todo.TodoCategoryDTO"
             useGeneratedKeys="true"
             keyProperty="categoryId"
             keyColumn="category_id">

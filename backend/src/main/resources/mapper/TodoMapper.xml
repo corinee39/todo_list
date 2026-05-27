@@ -5,7 +5,7 @@
 
 <mapper namespace="com.bwsy.todolist.mapper.TodoMapper">
 
-    <resultMap id="TodoResultMap" type="com.bwsy.todolist.dto.TodoDTO">
+    <resultMap id="TodoResultMap" type="com.bwsy.todolist.dto.todo.TodoDTO">
         <id property="todoId" column="todo_id" />
         <result property="userId" column="user_id" />
         <result property="categoryId" column="category_id" />
@@ -69,7 +69,7 @@
     </select>
 
     <insert id="insertTodo"
-            parameterType="com.bwsy.todolist.dto.TodoDTO"
+            parameterType="com.bwsy.todolist.dto.todo.TodoDTO"
             useGeneratedKeys="true"
             keyProperty="todoId"
             keyColumn="todo_id">
@@ -94,7 +94,7 @@
         )
     </insert>
 
-    <update id="updateTodo" parameterType="com.bwsy.todolist.dto.TodoDTO">
+    <update id="updateTodo" parameterType="com.bwsy.todolist.dto.todo.TodoDTO">
         UPDATE todos
         SET
             category_id = #{categoryId},

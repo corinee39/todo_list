@@ -1,4 +1,4 @@
-package com.bwsy.todolist.dto;
+package com.bwsy.todolist.dto.ai;
 
 import java.util.List;
 import lombok.AllArgsConstructor;

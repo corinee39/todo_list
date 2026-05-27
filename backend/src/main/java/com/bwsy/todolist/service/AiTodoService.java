@@ -1,7 +1,7 @@
 package com.bwsy.todolist.service;
 
-import com.bwsy.todolist.dto.AiTodoGenerateRequest;
-import com.bwsy.todolist.dto.AiTodoGenerateResponse;
+import com.bwsy.todolist.dto.ai.AiTodoGenerateRequest;
+import com.bwsy.todolist.dto.ai.AiTodoGenerateResponse;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.ArrayList;

@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.bwsy.todolist.dto.TodoCategoryDTO;
+import com.bwsy.todolist.dto.todo.TodoCategoryDTO;
 import com.bwsy.todolist.security.UserPrincipal;
 import com.bwsy.todolist.service.TodoCategoryService;
 import com.bwsy.todolist.validation.TodoCategorySaveRequest;

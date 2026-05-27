@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.bwsy.todolist.dto.TodoDTO;
+import com.bwsy.todolist.dto.todo.TodoDTO;
 import com.bwsy.todolist.security.UserPrincipal;
 import com.bwsy.todolist.service.TodoService;
 import com.bwsy.todolist.validation.TodoCreateRequest;

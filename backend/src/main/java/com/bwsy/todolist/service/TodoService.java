@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.bwsy.todolist.dto.TodoDTO;
+import com.bwsy.todolist.dto.todo.TodoDTO;
 import com.bwsy.todolist.mapper.TodoMapper;
 import com.bwsy.todolist.validation.TodoCreateRequest;
 import com.bwsy.todolist.validation.TodoUpdateRequest;

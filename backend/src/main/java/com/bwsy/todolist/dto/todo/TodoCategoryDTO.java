@@ -1,4 +1,4 @@
-package com.bwsy.todolist.dto;
+package com.bwsy.todolist.dto.todo;
 
 import java.time.LocalDateTime;
 

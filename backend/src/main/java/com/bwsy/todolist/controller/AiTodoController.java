@@ -1,7 +1,7 @@
 package com.bwsy.todolist.controller;
 
-import com.bwsy.todolist.dto.AiTodoGenerateRequest;
-import com.bwsy.todolist.dto.AiTodoGenerateResponse;
+import com.bwsy.todolist.dto.ai.AiTodoGenerateRequest;
+import com.bwsy.todolist.dto.ai.AiTodoGenerateResponse;
 import com.bwsy.todolist.service.AiTodoService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

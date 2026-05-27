@@ -1,4 +1,4 @@
-package com.bwsy.todolist.dto;
+package com.bwsy.todolist.dto.ai;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;

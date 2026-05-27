@@ -5,7 +5,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.bwsy.todolist.dto.TodoCategoryDTO;
+import com.bwsy.todolist.dto.todo.TodoCategoryDTO;
 import com.bwsy.todolist.mapper.TodoCategoryMapper;
 import com.bwsy.todolist.validation.TodoCategorySaveRequest;
 
