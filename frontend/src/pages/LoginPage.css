@@ -16,6 +16,15 @@
   background-color: #fff;
 }
 
+.login-logo-area,
+.login-title-area,
+.login-preview-card,
+.social-login-list {
+  width: 300px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
 .login-logo-area {
   display: flex;
   align-items: center;
@@ -52,7 +61,7 @@
 .login-title-area h1 {
   margin: 0 0 14px;
   color: #222;
-  font-size: 32px;
+  font-size: 30px;
   line-height: 1.25;
   letter-spacing: -1px;
 }
@@ -60,11 +69,12 @@
 .login-title-area p {
   margin: 0;
   color: #777;
-  font-size: 15px;
+  font-size: 14px;
   line-height: 1.7;
 }
 
 .login-preview-card {
+  box-sizing: border-box;
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -105,47 +115,147 @@
 .social-login-list {
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: 12px;
-  margin-bottom: 18px;
 }
 
-.social-login-button {
+/* Kakao */
+.kakao-login-button {
+  width: 300px;
+  height: 45px;
+  padding: 0;
+  border: 0;
+  background-color: transparent;
+  cursor: pointer;
+}
+
+.kakao-login-button img {
+  display: block;
+  width: 300px;
+  height: 45px;
+}
+
+/* Google */
+.gsi-material-button {
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  -webkit-appearance: none;
+  background-color: white;
+  background-image: none;
+  border: 1px solid #747775;
+  border-radius: 4px;
+  box-sizing: border-box;
+  color: #1f1f1f;
+  cursor: pointer;
+  font-family: 'Roboto', arial, sans-serif;
+  font-size: 14px;
+  height: 45px;
+  letter-spacing: 0.25px;
+  outline: none;
+  overflow: hidden;
+  padding: 0 12px;
+  position: relative;
+  text-align: center;
+  transition: background-color 0.218s, border-color 0.218s, box-shadow 0.218s;
+  vertical-align: middle;
+  white-space: nowrap;
+  width: 300px;
+}
+
+.gsi-material-button .gsi-material-button-icon {
+  height: 20px;
+  margin-right: 10px;
+  min-width: 20px;
+  width: 20px;
+}
+
+.gsi-material-button .gsi-material-button-icon svg {
+  width: 20px;
+  height: 20px;
+}
+
+.gsi-material-button .gsi-material-button-content-wrapper {
+  align-items: center;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  height: 100%;
+  justify-content: space-between;
+  position: relative;
   width: 100%;
-  height: 52px;
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  font-size: 15px;
-  font-weight: 900;
 }
 
-.social-login-button.kakao {
-  border: 1px solid #fee500;
-  background-color: #fee500;
-  color: #222;
+.gsi-material-button .gsi-material-button-contents {
+  flex-grow: 1;
+  font-family: 'Roboto', arial, sans-serif;
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  vertical-align: top;
 }
 
-.social-login-button.google {
-  border: 1px solid #dddddd;
-  background-color: #fff;
-  color: #222;
+.gsi-material-button .gsi-material-button-state {
+  transition: opacity 0.218s;
+  bottom: 0;
+  left: 0;
+  opacity: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
 }
 
-.social-icon {
-  width: 26px;
-  height: 26px;
-  border-radius: 50%;
-  background-color: rgba(255, 255, 255, 0.8);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 13px;
-  font-weight: 900;
+.gsi-material-button:disabled {
+  cursor: default;
+  background-color: #ffffff61;
+  border-color: #1f1f1f1f;
 }
 
-.social-login-button.google .social-icon {
-  border: 1px solid #eeeeee;
-  background-color: #fff;
+.gsi-material-button:disabled .gsi-material-button-contents {
+  opacity: 38%;
+}
+
+.gsi-material-button:disabled .gsi-material-button-icon {
+  opacity: 38%;
+}
+
+.gsi-material-button:not(:disabled):active .gsi-material-button-state,
+.gsi-material-button:not(:disabled):focus .gsi-material-button-state {
+  background-color: #303030;
+  opacity: 12%;
+}
+
+.gsi-material-button:not(:disabled):hover {
+  box-shadow: 0 1px 2px 0 rgba(60, 64, 67, 0.3),
+    0 1px 3px 1px rgba(60, 64, 67, 0.15);
+}
+
+.gsi-material-button:not(:disabled):hover .gsi-material-button-state {
+  background-color: #303030;
+  opacity: 8%;
+}
+
+@media (max-width: 420px) {
+  .login-card {
+    padding: 28px;
+  }
+
+  .login-logo-area,
+  .login-title-area,
+  .login-preview-card,
+  .social-login-list,
+  .kakao-login-button,
+  .kakao-login-button img,
+  .gsi-material-button {
+    width: 100%;
+  }
+
+  .kakao-login-button,
+  .kakao-login-button img {
+    height: auto;
+  }
+
+  .gsi-material-button {
+    height: 45px;
+  }
 }
