@@ -1,6 +1,6 @@
 import './LoginPage.css';
 
-function LoginPage({ onLogin }) {
+function LoginPage({ onKakaoLogin, onGoogleLogin }) {
   return (
     <main className="login-page">
       <section className="login-card">
@@ -42,7 +42,7 @@ function LoginPage({ onLogin }) {
           <button
             className="kakao-login-button"
             type="button"
-            onClick={onLogin}
+            onClick={onKakaoLogin}
             aria-label="카카오 로그인"
           >
             <img
@@ -54,7 +54,7 @@ function LoginPage({ onLogin }) {
           <button
             className="gsi-material-button"
             type="button"
-            onClick={onLogin}
+            onClick={onGoogleLogin}
             aria-label="구글 로그인"
           >
             <div className="gsi-material-button-state"></div>

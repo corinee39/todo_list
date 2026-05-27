@@ -2,10 +2,8 @@ import { useState } from 'react';
 import SideMenu from './SideMenu';
 import './HomeHeader.css';
 
-function HomeHeader({ member, onChangePage, onLogout, onOpenFriendAdd }) {
+function HomeHeader({ isLoggedIn, onChangePage, onLogout, onOpenFriendAdd }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-
-  const nickname = member?.nickname || 'me';
 
   const handleOpenMenu = () => {
     setIsMenuOpen(true);
@@ -21,7 +19,7 @@ function HomeHeader({ member, onChangePage, onLogout, onOpenFriendAdd }) {
         <div className="friend-list">
           <button className="profile-chip active">
             <span className="avatar">me</span>
-            <span>{nickname}</span>
+            <span>me</span>
           </button>
 
           <button className="profile-chip">
@@ -52,10 +50,10 @@ function HomeHeader({ member, onChangePage, onLogout, onOpenFriendAdd }) {
 
       <SideMenu
         isOpen={isMenuOpen}
+        isLoggedIn={isLoggedIn}
         onClose={handleCloseMenu}
         onChangePage={onChangePage}
         onLogout={onLogout}
-        member={member}
       />
     </>
   );

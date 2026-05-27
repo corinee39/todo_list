@@ -1,15 +1,15 @@
-import { useState } from "react";
-import CalendarCard from "../components/calendar/CalendarCard";
-import FriendAddModal from "../components/friend/FriendAddModal";
-import BottomNav from "../components/layout/BottomNav";
-import HomeHeader from "../components/layout/HomeHeader";
-import NotificationModal from "../components/layout/NotificationModal";
-import TimerCard from "../components/timer/TimerCard";
-import TodoCardList from "../components/todo/TodoCardList";
-import "./HomePage.css";
+import { useState } from 'react';
+import CalendarCard from '../components/calendar/CalendarCard';
+import FriendAddModal from '../components/friend/FriendAddModal';
+import BottomNav from '../components/layout/BottomNav';
+import HomeHeader from '../components/layout/HomeHeader';
+import NotificationModal from '../components/layout/NotificationModal';
+import TimerCard from '../components/timer/TimerCard';
+import TodoCardList from '../components/todo/TodoCardList';
+import './HomePage.css';
 
 function HomePage({
-  member,
+  isLoggedIn,
   onChangePage,
   onLogout,
   selectedDate,
@@ -25,7 +25,7 @@ function HomePage({
   return (
     <main className="home-page">
       <HomeHeader
-        member={member}
+        isLoggedIn={isLoggedIn}
         onChangePage={onChangePage}
         onLogout={onLogout}
         onOpenFriendAdd={() => setIsFriendAddModalOpen(true)}
@@ -34,7 +34,10 @@ function HomePage({
       <TimerCard />
 
       <section className="dashboard">
-        <CalendarCard selectedDate={selectedDate} onSelectDate={onSelectDate} />
+        <CalendarCard
+          selectedDate={selectedDate}
+          onSelectDate={onSelectDate}
+        />
 
         <TodoCardList
           selectedDate={selectedDate}
