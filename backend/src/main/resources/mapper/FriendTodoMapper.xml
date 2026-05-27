@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.bwsy.todolist.mapper.FriendTodoMapper">
+
+    <select id="findFriendTodosByDate"
+            resultType="com.bwsy.todolist.dto.friend.FriendTodoResponse">
+        SELECT
+            t.todo_id AS todoId,
+            t.category_id AS categoryId,
+            c.name AS categoryName,
+            t.title AS title,
+            t.todo_date AS todoDate,
+            t.status AS status,
+            t.priority AS priority,
+            t.completed_at AS completedAt
+        FROM todos t
+        LEFT JOIN todo_categories c
+               ON t.category_id = c.category_id
+              AND c.deleted_at IS NULL
+        WHERE t.user_id = #{friendUserId}
+          AND t.todo_date = #{date}
+          AND t.deleted_at IS NULL
+        ORDER BY t.created_at DESC
+    </select>
+
+    <select id="findFriendTodoDetail"
+            resultType="com.bwsy.todolist.dto.friend.FriendTodoDetailResponse">
+        SELECT
+            t.todo_id AS todoId,
+            t.category_id AS categoryId,
+            c.name AS categoryName,
+            t.title AS title,
+            t.content AS content,
+            t.todo_date AS todoDate,
+            t.status AS status,
+            t.priority AS priority,
+            t.completed_at AS completedAt,
+            t.created_at AS createdAt,
+            t.updated_at AS updatedAt
+        FROM todos t
+        LEFT JOIN todo_categories c
+               ON t.category_id = c.category_id
+              AND c.deleted_at IS NULL
+        WHERE t.todo_id = #{todoId}
+          AND t.user_id = #{friendUserId}
+          AND t.deleted_at IS NULL
+    </select>
+
+</mapper>
