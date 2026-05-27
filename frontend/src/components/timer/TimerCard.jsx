@@ -1,52 +1,77 @@
 import { useEffect, useState } from 'react';
 import './TimerCard.css';
 
-const FOCUS_TIME = 25 * 60;
-const BREAK_TIME = 5 * 60;
+const DEFAULT_MINUTES = 25;
+const DEFAULT_SECONDS = 0;
+
+function formatTime(totalSeconds) {
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = totalSeconds % 60;
+
+  return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(
+    2,
+    '0'
+  )}`;
+}
 
 function TimerCard() {
-  const [mode, setMode] = useState('focus');
-  const [timeLeft, setTimeLeft] = useState(FOCUS_TIME);
+  const [inputMinutes, setInputMinutes] = useState(DEFAULT_MINUTES);
+  const [inputSeconds, setInputSeconds] = useState(DEFAULT_SECONDS);
+  const [totalSeconds, setTotalSeconds] = useState(
+    DEFAULT_MINUTES * 60 + DEFAULT_SECONDS
+  );
+  const [remainingSeconds, setRemainingSeconds] = useState(
+    DEFAULT_MINUTES * 60 + DEFAULT_SECONDS
+  );
   const [isRunning, setIsRunning] = useState(false);
 
   useEffect(() => {
-    if (!isRunning) return;
+    if (!isRunning) {
+      return;
+    }
 
     const timerId = setInterval(() => {
-      setTimeLeft((prevTime) => {
-        if (prevTime <= 1) {
+      setRemainingSeconds((prevSeconds) => {
+        if (prevSeconds <= 1) {
           clearInterval(timerId);
           setIsRunning(false);
           return 0;
         }
 
-        return prevTime - 1;
+        return prevSeconds - 1;
       });
     }, 1000);
 
     return () => clearInterval(timerId);
   }, [isRunning]);
 
-  const formatTime = (seconds) => {
-    const minute = String(Math.floor(seconds / 60)).padStart(2, '0');
-    const second = String(seconds % 60).padStart(2, '0');
+  const handleApplyTime = () => {
+    const minutes = Number(inputMinutes);
+    const seconds = Number(inputSeconds);
 
-    return `${minute}:${second}`;
-  };
+    if (minutes < 0 || seconds < 0 || seconds > 59) {
+      alert('시간을 올바르게 입력해주세요.');
+      return;
+    }
 
-  const handleFocusMode = () => {
-    setMode('focus');
-    setTimeLeft(FOCUS_TIME);
+    const nextTotalSeconds = minutes * 60 + seconds;
+
+    if (nextTotalSeconds <= 0) {
+      alert('1초 이상 입력해주세요.');
+      return;
+    }
+
     setIsRunning(false);
-  };
-
-  const handleBreakMode = () => {
-    setMode('break');
-    setTimeLeft(BREAK_TIME);
-    setIsRunning(false);
+    setTotalSeconds(nextTotalSeconds);
+    setRemainingSeconds(nextTotalSeconds);
   };
 
   const handleStart = () => {
+    if (remainingSeconds <= 0) {
+      handleApplyTime();
+      return;
+    }
+
     setIsRunning(true);
   };
 
@@ -56,41 +81,73 @@ function TimerCard() {
 
   const handleReset = () => {
     setIsRunning(false);
-    setTimeLeft(mode === 'focus' ? FOCUS_TIME : BREAK_TIME);
+    setRemainingSeconds(totalSeconds);
   };
+
+  const progressPercent =
+    totalSeconds > 0
+      ? ((totalSeconds - remainingSeconds) / totalSeconds) * 100
+      : 0;
 
   return (
     <section className="timer-card">
-      <div className="timer-circle">
-        <p>{formatTime(timeLeft)}</p>
+      <div
+        className="timer-circle"
+        style={{
+          background: `conic-gradient(#7b61ff ${progressPercent}%, #ded7ff ${progressPercent}%)`,
+        }}
+      >
+        <div className="timer-circle-inner">
+          <strong>{formatTime(remainingSeconds)}</strong>
+        </div>
       </div>
 
-      <div className="timer-info">
+      <div className="timer-content">
         <h2>집중 타이머</h2>
-        <p>현재 할 일: 정보처리기사 필기 공부</p>
 
-        <div className="timer-mode-list">
-          <button
-            className={`timer-mode ${mode === 'focus' ? 'active' : ''}`}
-            onClick={handleFocusMode}
-          >
-            집중 25분
-          </button>
+        <div className="timer-setting">
+          <label>
+            <span>분</span>
+            <input
+              type="number"
+              min="0"
+              value={inputMinutes}
+              disabled={isRunning}
+              onChange={(event) => setInputMinutes(event.target.value)}
+            />
+          </label>
 
-          <button
-            className={`timer-mode ${mode === 'break' ? 'active' : ''}`}
-            onClick={handleBreakMode}
-          >
-            휴식 5분
+          <label>
+            <span>초</span>
+            <input
+              type="number"
+              min="0"
+              max="59"
+              value={inputSeconds}
+              disabled={isRunning}
+              onChange={(event) => setInputSeconds(event.target.value)}
+            />
+          </label>
+
+          <button type="button" disabled={isRunning} onClick={handleApplyTime}>
+            적용
           </button>
         </div>
 
-        <div className="timer-button-list">
-          <button className="start-button" onClick={handleStart}>
-            시작
+        <div className="timer-actions">
+          {isRunning ? (
+            <button type="button" onClick={handlePause}>
+              일시정지
+            </button>
+          ) : (
+            <button type="button" onClick={handleStart}>
+              시작
+            </button>
+          )}
+
+          <button type="button" onClick={handleReset}>
+            초기화
           </button>
-          <button onClick={handlePause}>일시정지</button>
-          <button onClick={handleReset}>초기화</button>
         </div>
       </div>
     </section>

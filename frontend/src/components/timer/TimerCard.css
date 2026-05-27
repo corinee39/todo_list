@@ -1,58 +1,143 @@
 .timer-card {
   display: flex;
   align-items: center;
-  gap: 32px;
-  margin-bottom: 24px;
-  padding: 28px;
+  gap: 36px;
+  padding: 36px;
   border-radius: 28px;
   background-color: #fff;
-  box-shadow: 0 12px 32px rgba(91, 80, 190, 0.12);
+  margin-bottom: 28px;
 }
 
 .timer-circle {
   width: 160px;
   height: 160px;
-  border: 12px solid #ded9ff;
   border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.timer-circle-inner {
+  width: 136px;
+  height: 136px;
+  border-radius: 50%;
+  background-color: #fff;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.timer-circle p {
+.timer-circle-inner strong {
+  color: #222;
   font-size: 36px;
-  font-weight: 800;
-  margin: 0;
+  font-weight: 900;
+  letter-spacing: -1px;
 }
 
-.timer-info h2 {
-  margin: 0 0 8px;
+.timer-content {
+  flex: 1;
 }
 
-.timer-info p {
-  margin: 0 0 16px;
-  color: #666;
+.timer-content h2 {
+  margin: 0 0 22px;
+  color: #222;
+  font-size: 28px;
+  font-weight: 900;
+  letter-spacing: -0.7px;
 }
 
-.timer-mode-list,
-.timer-button-list {
+.timer-setting {
   display: flex;
+  align-items: flex-end;
   gap: 10px;
-  margin-top: 12px;
+  margin-bottom: 18px;
 }
 
-.timer-mode,
-.timer-button-list button {
+.timer-setting label {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.timer-setting span {
+  color: #666;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.timer-setting input {
+  width: 74px;
+  height: 42px;
+  border: 1px solid #e5e5e5;
+  border-radius: 14px;
+  background-color: #f7f7f9;
+  color: #222;
+  font-size: 16px;
+  font-weight: 800;
+  text-align: center;
+  outline: none;
+}
+
+.timer-setting input:focus {
+  border-color: #7b61ff;
+  background-color: #fff;
+}
+
+.timer-setting input:disabled {
+  color: #999;
+  cursor: not-allowed;
+}
+
+.timer-setting button,
+.timer-actions button {
+  height: 42px;
   border: 0;
   border-radius: 999px;
-  padding: 10px 16px;
-  background-color: #f1f1f5;
-  color: #555;
-  font-weight: 600;
+  padding: 0 18px;
+  background-color: #f0f0f3;
+  color: #444;
+  font-size: 14px;
+  font-weight: 900;
+  cursor: pointer;
 }
 
-.timer-mode.active,
-.start-button {
-  background-color: #7b61ff !important;
-  color: #fff !important;
+.timer-setting button:disabled {
+  color: #aaa;
+  cursor: not-allowed;
+}
+
+.timer-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.timer-actions button:first-child {
+  background-color: #7b61ff;
+  color: #fff;
+}
+
+@media (max-width: 720px) {
+  .timer-card {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 24px;
+    padding: 28px;
+  }
+
+  .timer-circle {
+    margin: 0 auto;
+  }
+
+  .timer-content h2 {
+    text-align: center;
+  }
+
+  .timer-setting {
+    justify-content: center;
+  }
+
+  .timer-actions {
+    justify-content: center;
+  }
 }
