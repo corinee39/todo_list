@@ -70,8 +70,11 @@ public class SecurityConfig {
                         // 브라우저의 CORS 사전 요청은 항상 허용
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
-                        // 카카오 로그인 API는 JWT가 없어도 호출 가능해야 함
-                        .requestMatchers("/api/auth/**").permitAll()
+                        // 카카오/구글 로그인 API는 JWT가 없어도 호출 가능해야 함
+                        .requestMatchers(
+                                "/api/auth/kakao",
+                                "/api/auth/google"
+                        ).permitAll()
 
                         // Spring Boot 내부 에러 경로 허용
                         .requestMatchers("/error").permitAll()

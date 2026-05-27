@@ -23,4 +23,11 @@ public class AuthController {
     ) {
         return authService.loginWithKakao(request.getToken());
     }
+
+    @PostMapping("/google")
+    public AuthResponse loginWithGoogle(
+            @RequestBody SocialLoginRequest request
+    ) {
+        return authService.loginWithGoogle(request.getToken());
+    }
 }

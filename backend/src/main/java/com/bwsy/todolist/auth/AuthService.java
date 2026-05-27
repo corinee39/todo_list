@@ -14,19 +14,13 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class AuthService {
 
-    /**
-     * 카카오 API와 통신하는 클래스
-     *
-     * 인가 code를 이용해 카카오 access token을 발급받고,
-     * 카카오 사용자 정보를 조회
-     */
+    // 카카오 API와 통신하는 클래스
     private final KakaoAuthClient kakaoAuthClient;
 
-    /**
-     * users 테이블 접근을 담당하는 MyBatis Mapper
-     *
-     * 회원 조회, 회원 등록, 닉네임 중복 검사 등에 사용
-     */
+    // 구글 API와 통신하는 클래스
+    private final GoogleAuthClient googleAuthClient;
+
+    // users 테이블 접근을 담당하는 MyBatis Mapper
     private final MemberMapper memberMapper;
 
     /**
@@ -43,7 +37,32 @@ public class AuthService {
         // 카카오 서버에서 사용자 정보 조회
         SocialUserInfo socialUserInfo =
                 kakaoAuthClient.getUserInfoByAuthorizationCode(authorizationCode);
+        return loginWithSocialUserInfo(socialUserInfo);
+    }
 
+    // 구글 로그인 처리 메서드
+    @Transactional
+    public AuthResponse loginWithGoogle(String authorizationCode) {
+        SocialUserInfo socialUserInfo =
+                googleAuthClient.getUserInfoByAuthorizationCode(authorizationCode);
+
+        return loginWithSocialUserInfo(socialUserInfo);
+    }
+
+    /**
+     * 소셜 로그인 공통 처리 메서드
+     *
+     * 카카오, 구글 모두 이 메서드를 사용함
+     *
+     * 처리 흐름:
+     * 1. provider + providerId 기준으로 기존 회원 조회
+     * 2. 없으면 신규 회원가입
+     * 3. 탈퇴 회원이면 로그인 차단
+     * 4. 우리 서비스 JWT 발급
+     * 5. AuthResponse 반환
+     */
+
+    private AuthResponse loginWithSocialUserInfo(SocialUserInfo socialUserInfo) {
         // provider + providerId 기준으로 기존 회원 조회
         MemberDTO member = memberMapper.findByProviderAndProviderId(
                 socialUserInfo.provider(),
@@ -90,6 +109,7 @@ public class AuthService {
                 member.getEmail(),
                 member.getNickname()
         );
+
     }
 
     /**
