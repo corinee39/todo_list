@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.bwsy.todolist.mapper.FriendMapper">
+
+    <select id="searchMembers" resultType="com.bwsy.todolist.dto.friend.MemberSearchResponse">
+        SELECT
+            user_id AS userId,
+            email,
+            nickname
+        FROM users
+        WHERE status = 'ACTIVE'
+          AND deleted_at IS NULL
+          AND user_id != #{loginUserId}
+          AND (
+                LOWER(email) LIKE '%' || LOWER(#{keyword}) || '%'
+             OR LOWER(nickname) LIKE '%' || LOWER(#{keyword}) || '%'
+          )
+        ORDER BY nickname
+    </select>
+
+    <select id="countActiveUserById" resultType="int">
+        SELECT COUNT(*)
+        FROM users
+        WHERE user_id = #{userId}
+          AND status = 'ACTIVE'
+          AND deleted_at IS NULL
+    </select>
+
+    <select id="findRelationBetweenUsers" resultType="com.bwsy.todolist.dto.friend.FriendRelationDTO">
+        SELECT
+            friend_id AS friendId,
+            requester_id AS requesterId,
+            receiver_id AS receiverId,
+            status
+        FROM friends
+        WHERE (
+                requester_id = #{userId}
+            AND receiver_id = #{targetUserId}
+        )
+        OR (
+                requester_id = #{targetUserId}
+            AND receiver_id = #{userId}
+        )
+        FETCH FIRST 1 ROWS ONLY
+    </select>
+
+    <insert id="insertFriendRequest">
+        INSERT INTO friends (
+            requester_id,
+            receiver_id,
+            status,
+            requested_at
+        ) VALUES (
+            #{requesterId},
+            #{receiverId},
+            'PENDING',
+            CURRENT_TIMESTAMP
+        )
+    </insert>
+
+    <update id="updateExistingRelationToPending">
+        UPDATE friends
+        SET
+            requester_id = #{requesterId},
+            receiver_id = #{receiverId},
+            status = 'PENDING',
+            requested_at = CURRENT_TIMESTAMP,
+            responded_at = NULL,
+            deleted_at = NULL
+        WHERE friend_id = #{friendId}
+    </update>
+
+    <select id="findReceivedRequests" resultType="com.bwsy.todolist.dto.friend.FriendRequestResponse">
+        SELECT
+            f.friend_id AS requestId,
+            u.user_id AS requesterId,
+            u.email AS requesterEmail,
+            u.nickname AS requesterNickname,
+            f.requested_at AS requestedAt
+        FROM friends f
+        JOIN users u
+          ON f.requester_id = u.user_id
+        WHERE f.receiver_id = #{receiverId}
+          AND f.status = 'PENDING'
+          AND f.deleted_at IS NULL
+          AND u.status = 'ACTIVE'
+          AND u.deleted_at IS NULL
+        ORDER BY f.requested_at DESC
+    </select>
+
+    <select id="findById" resultType="com.bwsy.todolist.dto.friend.FriendRelationDTO">
+        SELECT
+            friend_id AS friendId,
+            requester_id AS requesterId,
+            receiver_id AS receiverId,
+            status
+        FROM friends
+        WHERE friend_id = #{friendId}
+    </select>
+
+    <update id="acceptRequest">
+        UPDATE friends
+        SET
+            status = 'ACCEPTED',
+            responded_at = CURRENT_TIMESTAMP,
+            deleted_at = NULL
+        WHERE friend_id = #{friendId}
+          AND status = 'PENDING'
+    </update>
+
+    <update id="rejectRequest">
+        UPDATE friends
+        SET
+            status = 'REJECTED',
+            responded_at = CURRENT_TIMESTAMP
+        WHERE friend_id = #{friendId}
+          AND status = 'PENDING'
+    </update>
+
+    <select id="findFriends" resultType="com.bwsy.todolist.dto.friend.FriendResponse">
+        SELECT
+            f.friend_id AS friendId,
+            CASE
+                WHEN f.requester_id = #{loginUserId} THEN receiver.user_id
+                ELSE requester.user_id
+            END AS userId,
+            CASE
+                WHEN f.requester_id = #{loginUserId} THEN receiver.email
+                ELSE requester.email
+            END AS email,
+            CASE
+                WHEN f.requester_id = #{loginUserId} THEN receiver.nickname
+                ELSE requester.nickname
+            END AS nickname
+        FROM friends f
+        JOIN users requester
+          ON f.requester_id = requester.user_id
+        JOIN users receiver
+          ON f.receiver_id = receiver.user_id
+        WHERE f.status = 'ACCEPTED'
+          AND f.deleted_at IS NULL
+          AND (
+                f.requester_id = #{loginUserId}
+             OR f.receiver_id = #{loginUserId}
+          )
+          AND requester.status = 'ACTIVE'
+          AND requester.deleted_at IS NULL
+          AND receiver.status = 'ACTIVE'
+          AND receiver.deleted_at IS NULL
+        ORDER BY nickname
+    </select>
+
+    <update id="deleteFriend">
+        UPDATE friends
+        SET
+            status = 'DELETED',
+            deleted_at = CURRENT_TIMESTAMP
+        WHERE friend_id = #{friendId}
+          AND status = 'ACCEPTED'
+    </update>
+
+</mapper>

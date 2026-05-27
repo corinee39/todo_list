@@ -1,21 +1,30 @@
 package com.bwsy.todolist.controller;
 
+import java.util.List;
+
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.bwsy.todolist.dto.MemberDTO;
 import com.bwsy.todolist.dto.MemberResponse;
+import com.bwsy.todolist.dto.friend.MemberSearchResponse;
 import com.bwsy.todolist.mapper.MemberMapper;
 import com.bwsy.todolist.security.UserPrincipal;
+import com.bwsy.todolist.service.FriendService;
 
 import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/api/members")
 public class MemberController {
 
     private final MemberMapper memberMapper;
+
+    private final FriendService friendService;
 
     /**
      * 내 정보 조회 API
@@ -34,7 +43,7 @@ public class MemberController {
      * @param principal 현재 로그인한 사용자 정보
      * @return React에 내려줄 내 정보 응답
      */
-    @GetMapping("/api/members/me")
+    @GetMapping("/me")
     public MemberResponse getMyInfo(
             @AuthenticationPrincipal UserPrincipal principal
     ) {
@@ -62,5 +71,16 @@ public class MemberController {
                 member.getNickname(),
                 member.getProvider()
         );
+    }
+
+    // 사용자 검색 API
+    @GetMapping("/search")
+    public List<MemberSearchResponse> searchMembers(
+            @RequestParam String keyword,
+            @AuthenticationPrincipal UserPrincipal principal
+    ) {
+        Long loginUserId = principal.getUserId();
+
+        return friendService.searchMembers(keyword, loginUserId);
     }
 }
