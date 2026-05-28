@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.bwsy.todolist.mapper.CommentMapper">
+
+    <select id="countActivePost" resultType="int">
+        SELECT COUNT(*)
+          FROM posts
+         WHERE post_id = #{postId}
+           AND status = 'ACTIVE'
+           AND deleted_at IS NULL
+    </select>
+
+    <select id="findCommentsByPostId" resultType="CommentDTO">
+        SELECT
+            c.comment_id,
+            c.post_id,
+            c.user_id,
+            u.nickname,
+            c.content,
+            c.status,
+            c.created_at,
+            c.updated_at,
+            c.deleted_at
+         FROM comments c
+         JOIN users u
+           ON c.user_id = u.user_id
+        WHERE c.post_id = #{postId}
+          AND c.status = 'ACTIVE'
+          AND c.deleted_at IS NULL
+        ORDER BY c.comment_id ASC
+    </select>
+
+    <select id="findCommentById" resultType="CommentDTO">
+        SELECT
+            c.comment_id,
+            c.post_id,
+            c.user_id,
+            u.nickname,
+            c.content,
+            c.status,
+            c.created_at,
+            c.updated_at,
+            c.deleted_at
+         FROM comments c
+         JOIN users u
+           ON c.user_id = u.user_id
+        WHERE c.comment_id = #{commentId}
+          AND c.status = 'ACTIVE'
+          AND c.deleted_at IS NULL
+    </select>
+
+    <insert id="insertComment">
+        INSERT INTO comments (
+            post_id,
+            user_id,
+            content,
+            status,
+            created_at
+        ) VALUES (
+            #{postId},
+            #{userId},
+            #{request.content},
+            'ACTIVE',
+            SYSTIMESTAMP
+        )
+    </insert>
+
+    <update id="updateComment">
+        UPDATE comments
+           SET
+            content = #{request.content},
+            updated_at = SYSTIMESTAMP
+        WHERE comment_id = #{commentId}
+          AND user_id = #{userId}
+          AND status = 'ACTIVE'
+          AND deleted_at IS NULL
+    </update>
+
+    <update id="softDeleteComment">
+        UPDATE comments
+           SET
+            status = 'DELETED',
+            deleted_at = SYSTIMESTAMP
+        WHERE comment_id = #{commentId}
+          AND user_id = #{userId}
+          AND status = 'ACTIVE'
+          AND deleted_at IS NULL
+    </update>
+
+</mapper>

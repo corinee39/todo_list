@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.bwsy.todolist.dto.MemberDTO;
 import com.bwsy.todolist.dto.post.PostDTO;
 import com.bwsy.todolist.security.UserPrincipal;
 import com.bwsy.todolist.service.PostService;

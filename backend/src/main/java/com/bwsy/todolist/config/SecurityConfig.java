@@ -76,17 +76,25 @@ public class SecurityConfig {
                                 "/api/auth/google"
                         ).permitAll()
 
-                        // 게시글 목록 조회, 검색, 카테고리 필터 조회는 로그인 없이 허용
+                        // 게시글 목록 조회, 검색, 상세 조회는 로그인 없이 허용
                         .requestMatchers(HttpMethod.GET, "/api/posts").permitAll()
-
-                        // 게시글 상세 조회는 로그인 없이 허용
                         .requestMatchers(HttpMethod.GET, "/api/posts/*").permitAll()
+
+                        // 댓글 목록 조회는 로그인 없이 허용
+                        .requestMatchers(HttpMethod.GET, "/api/posts/*/comments").permitAll()
 
                         // 게시글 등록, 수정, 삭제는 로그인 필요
                         .requestMatchers(HttpMethod.POST,
                                 "/api/posts",
                                 "/api/posts/*/update",
                                 "/api/posts/*/delete"
+                        ).authenticated()
+
+                        // 댓글 등록, 수정, 삭제는 로그인 필요
+                        .requestMatchers(HttpMethod.POST,
+                                "/api/posts/*/comments",
+                                "/api/comments/*/update",
+                                "/api/comments/*/delete"
                         ).authenticated()
 
                         // Spring Boot 내부 에러 경로 허용
