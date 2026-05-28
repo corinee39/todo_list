@@ -57,7 +57,7 @@ public class FriendController {
     @PostMapping("/requests/{requestId}/accept")
     public void acceptRequest(
             @AuthenticationPrincipal UserPrincipal principal,
-            @PathVariable Long requestId
+            @PathVariable("requestId") Long requestId
     ) {
         Long loginUserId = principal.getUserId();
         friendService.acceptRequest(loginUserId, requestId);
@@ -66,7 +66,7 @@ public class FriendController {
     @PostMapping("/requests/{requestId}/reject")
     public void rejectRequest(
             @AuthenticationPrincipal UserPrincipal principal,
-            @PathVariable Long requestId
+            @PathVariable("requestId") Long requestId
     ) {
         Long loginUserId = principal.getUserId();
         friendService.rejectRequest(loginUserId, requestId);
@@ -83,7 +83,7 @@ public class FriendController {
     @PostMapping("/{friendId}/delete")
     public void deleteFriend(
             @AuthenticationPrincipal UserPrincipal principal,
-            @PathVariable Long friendId
+            @PathVariable("friendId") Long friendId
     ) {
         Long loginUserId = principal.getUserId();
         friendService.deleteFriend(loginUserId, friendId);
@@ -93,7 +93,7 @@ public class FriendController {
     @GetMapping("/{friendId}/todos")
     public List<FriendTodoResponse> findFriendTodos(
             @AuthenticationPrincipal UserPrincipal principal,
-            @PathVariable Long friendId,
+            @PathVariable("friendId") Long friendId,
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
             @RequestParam LocalDate date
     ) {
@@ -110,8 +110,8 @@ public class FriendController {
     @GetMapping("/{friendId}/todos/{todoId}")
     public FriendTodoDetailResponse findFriendTodoDetail(
             @AuthenticationPrincipal UserPrincipal principal,
-            @PathVariable Long friendId,
-            @PathVariable Long todoId
+            @PathVariable("friendId") Long friendId,
+            @PathVariable("todoId") Long todoId
     ) {
         Long loginUserId = principal.getUserId();
 
