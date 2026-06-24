@@ -21,7 +21,19 @@
 | 커뮤니티  | 게시글 등록·조회·수정·삭제, 댓글, 검색, 카테고리 필터                        |
 | AI        | 목표를 입력하면 LLM이 실행 가능한 할 일 목록을 자동 생성                     |
 
-- AI 할 일 생성
+- 메인 화면<br>
+  ![alt text](./frontend/public/images/image-2.png)
+
+- 사이드바 메뉴<br>
+  ![alt text](./frontend/public/images/image-4.png)
+
+- 친구 추가<br>
+  ![alt text](./frontend/public/images/image-1.png)
+
+- 친구 Todo 조회<br>
+  ![alt text](./frontend/public/images/image-3.png)
+
+- AI 할 일 생성<br>
   ![alt text](./frontend/public/images/image.png)
 
 ### 핵심 정책
