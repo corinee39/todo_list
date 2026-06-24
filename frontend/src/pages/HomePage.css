@@ -1,11 +1,18 @@
 .home-page {
   min-height: 100vh;
-  padding: 24px 24px 120px;
+  padding: 24px;
   background-color: #f7f7fb;
 }
 
 .dashboard {
   display: grid;
   grid-template-columns: 1fr 1fr;
+  align-items: start;
+  gap: 24px;
+}
+
+.dashboard-left {
+  display: flex;
+  flex-direction: column;
   gap: 24px;
 }

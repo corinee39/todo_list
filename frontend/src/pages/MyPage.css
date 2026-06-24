@@ -62,12 +62,110 @@
   color: #777;
 }
 
-.my-follow-info {
+.my-provider-badge {
+  display: inline-block;
+  padding: 5px 12px;
+  border-radius: 999px;
+  background-color: #f0ecff;
+  color: #7b61ff;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.my-edit-card {
+  margin-bottom: 24px;
+  padding: 24px;
+  border-radius: 28px;
+  background-color: #fff;
+  box-shadow: 0 12px 32px rgba(91, 80, 190, 0.12);
+}
+
+.my-edit-card h2 {
+  margin: 0 0 16px;
+  color: #222;
+  font-size: 20px;
+}
+
+.my-edit-form {
   display: flex;
   gap: 12px;
-  color: #7b61ff;
+}
+
+.my-edit-form input {
+  flex: 1;
+  height: 48px;
+  padding: 0 16px;
+  border: 1px solid #e5e5ee;
+  border-radius: 14px;
+  background-color: #fbfbfd;
+  color: #222;
+  font-size: 15px;
+  font-weight: 600;
+  outline: none;
+}
+
+.my-edit-form input:focus {
+  border-color: #7b61ff;
+  background-color: #fff;
+}
+
+.my-edit-form button {
+  height: 48px;
+  padding: 0 24px;
+  border: 0;
+  border-radius: 14px;
+  background-color: #7b61ff;
+  color: #fff;
+  font-size: 15px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.my-edit-form button:disabled {
+  background-color: #c3b8ff;
+  cursor: not-allowed;
+}
+
+.my-danger-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-top: 24px;
+  padding: 24px;
+  border-radius: 28px;
+  background-color: #fff5f6;
+  border: 1px solid #ffd9df;
+}
+
+.my-danger-card h2 {
+  margin: 0 0 6px;
+  color: #e23a55;
+  font-size: 18px;
+}
+
+.my-danger-card p {
+  margin: 0;
+  color: #b06b76;
+  font-size: 13px;
+}
+
+.my-delete-button {
+  flex-shrink: 0;
+  height: 44px;
+  padding: 0 20px;
+  border: 0;
+  border-radius: 14px;
+  background-color: #e23a55;
+  color: #fff;
   font-size: 14px;
   font-weight: 800;
+  cursor: pointer;
+}
+
+.my-delete-button:disabled {
+  background-color: #f0a3af;
+  cursor: not-allowed;
 }
 
 .my-record-card {

@@ -37,4 +37,13 @@ public interface FriendTodoMapper {
             @Param("friendUserId") Long friendUserId,
             @Param("todoId") Long todoId
     );
+
+    /*
+     * 친구의 특정 연/월에 할 일이 존재하는 날짜 목록 조회 (달력 점 표시용)
+     */
+    List<LocalDate> findFriendTodoDatesByMonth(
+            @Param("friendUserId") Long friendUserId,
+            @Param("year") int year,
+            @Param("month") int month
+    );
 }

@@ -1,7 +1,12 @@
 import { useEffect, useState } from 'react';
 import { Navigate, Route, Routes, useNavigate } from 'react-router';
 import { getAccessToken } from './api/httpClient';
-import { getMyInfo, logout } from './api/authApi';
+import {
+  deleteMyAccount,
+  getMyInfo,
+  logout,
+  updateMyInfo,
+} from './api/authApi';
 import {
   createTodoCategory,
   deleteTodoCategory,
@@ -30,6 +35,7 @@ import CategoryCreatePage from './pages/CategoryCreatePage';
 import CategoryManagePage from './pages/CategoryManagePage';
 import FriendListPage from './pages/FriendListPage';
 import FriendRequestPage from './pages/FriendRequestPage';
+import FriendTodoPage from './pages/FriendTodoPage';
 import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
 import MyPage from './pages/MyPage';
@@ -173,6 +179,7 @@ function AppRoutes() {
   const today = getTodayDateString();
 
   const [isLoggedIn, setIsLoggedIn] = useState(Boolean(getAccessToken()));
+  const [currentUser, setCurrentUser] = useState(null);
   const [selectedDate, setSelectedDate] = useState(today);
   const [todoSections, setTodoSections] = useState([]);
   const [markedDates, setMarkedDates] = useState([]);
@@ -186,16 +193,19 @@ function AppRoutes() {
     async function checkLoginStatus() {
       if (!getAccessToken()) {
         setIsLoggedIn(false);
+        setCurrentUser(null);
         setTodoSections([]);
         return;
       }
 
       try {
-        await getMyInfo();
+        const me = await getMyInfo();
         setIsLoggedIn(true);
+        setCurrentUser(me);
       } catch (error) {
         logout();
         setIsLoggedIn(false);
+        setCurrentUser(null);
         setTodoSections([]);
       }
     }
@@ -341,6 +351,14 @@ function AppRoutes() {
     navigate(path);
   };
 
+  const handleOpenFriendTodos = (friendId) => {
+    if (!requireLogin()) {
+      return;
+    }
+
+    navigate(`/friends/${friendId}/todos`);
+  };
+
   const handleKakaoLogin = () => {
     const kakaoRestApiKey = import.meta.env.VITE_KAKAO_REST_API_KEY;
     const kakaoRedirectUri = import.meta.env.VITE_KAKAO_REDIRECT_URI;
@@ -378,8 +396,16 @@ function AppRoutes() {
     window.location.href = googleAuthUrl;
   };
 
-  const handleLoginSuccess = () => {
+  const handleLoginSuccess = async () => {
     setIsLoggedIn(true);
+
+    try {
+      const me = await getMyInfo();
+      setCurrentUser(me);
+    } catch (error) {
+      console.error('내 정보 조회 실패:', error);
+    }
+
     navigate('/');
   };
 
@@ -392,7 +418,25 @@ function AppRoutes() {
 
     logout();
     setIsLoggedIn(false);
+    setCurrentUser(null);
     setTodoSections([]);
+    navigate('/');
+  };
+
+  const handleUpdateNickname = async (nickname) => {
+    const updated = await updateMyInfo({ nickname });
+    setCurrentUser(updated);
+    return updated;
+  };
+
+  const handleDeleteAccount = async () => {
+    await deleteMyAccount();
+
+    logout();
+    setIsLoggedIn(false);
+    setCurrentUser(null);
+    setTodoSections([]);
+    alert('회원 탈퇴가 완료되었습니다.');
     navigate('/');
   };
 
@@ -677,6 +721,8 @@ function AppRoutes() {
             isLoggedIn={isLoggedIn}
             onChangePage={handleChangePage}
             onLogout={handleLogout}
+            currentUser={currentUser}
+            friends={friends}
             selectedDate={selectedDate}
             onSelectDate={setSelectedDate}
             calendarYear={calendarYear}
@@ -689,6 +735,7 @@ function AppRoutes() {
             onDeleteTodo={handleDeleteTodo}
             onSearchMembers={handleSearchMembers}
             onSendFriendRequest={handleSendFriendRequest}
+            onOpenFriendTodos={handleOpenFriendTodos}
           />
         }
       />
@@ -804,12 +851,29 @@ function AppRoutes() {
       />
 
       <Route
+        path="/friends/:friendId/todos"
+        element={
+          isLoggedIn ? (
+            <FriendTodoPage
+              friends={friends}
+              onChangePage={handleChangePage}
+            />
+          ) : (
+            <Navigate to="/login" replace />
+          )
+        }
+      />
+
+      <Route
         path="/my"
         element={
           isLoggedIn ? (
             <MyPage
               onChangePage={handleChangePage}
+              currentUser={currentUser}
               todoSections={todoSections}
+              onUpdateNickname={handleUpdateNickname}
+              onDeleteAccount={handleDeleteAccount}
             />
           ) : (
             <Navigate to="/login" replace />

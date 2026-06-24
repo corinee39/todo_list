@@ -23,6 +23,17 @@ public interface MemberMapper {
     // 닉네임 중복 개수 조회
     int countByNickname(String nickname);
 
+    // 본인을 제외한 닉네임 중복 개수 조회 (닉네임 수정 시 사용)
+    int countByNicknameAndNotUserId(@Param("nickname") String nickname,
+                                    @Param("userId") Long userId);
+
     // 신규 회원 등록
     void insertMember(MemberDTO member);
+
+    // 닉네임 수정
+    int updateNickname(@Param("userId") Long userId,
+                       @Param("nickname") String nickname);
+
+    // 회원 탈퇴 (소프트 삭제)
+    int softDeleteMember(@Param("userId") Long userId);
 }

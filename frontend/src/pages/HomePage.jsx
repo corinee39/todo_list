@@ -1,9 +1,7 @@
 import { useState } from 'react';
 import CalendarCard from '../components/calendar/CalendarCard';
 import FriendAddModal from '../components/friend/FriendAddModal';
-import BottomNav from '../components/layout/BottomNav';
 import HomeHeader from '../components/layout/HomeHeader';
-import NotificationModal from '../components/layout/NotificationModal';
 import TimerCard from '../components/timer/TimerCard';
 import TodoCardList from '../components/todo/TodoCardList';
 import './HomePage.css';
@@ -12,6 +10,8 @@ function HomePage({
   isLoggedIn,
   onChangePage,
   onLogout,
+  currentUser,
+  friends,
   selectedDate,
   onSelectDate,
   calendarYear,
@@ -24,30 +24,35 @@ function HomePage({
   onDeleteTodo,
   onSearchMembers,
   onSendFriendRequest,
+  onOpenFriendTodos,
 }) {
-  const [isNotificationModalOpen, setIsNotificationModalOpen] = useState(false);
   const [isFriendAddModalOpen, setIsFriendAddModalOpen] = useState(false);
 
   return (
     <main className="home-page">
       <HomeHeader
         isLoggedIn={isLoggedIn}
+        currentUser={currentUser}
+        friends={friends}
         onChangePage={onChangePage}
         onLogout={onLogout}
         onOpenFriendAdd={() => setIsFriendAddModalOpen(true)}
+        onOpenFriendTodos={onOpenFriendTodos}
       />
 
-      <TimerCard />
-
       <section className="dashboard">
-        <CalendarCard
-          selectedDate={selectedDate}
-          onSelectDate={onSelectDate}
-          viewYear={calendarYear}
-          viewMonth={calendarMonth}
-          markedDates={markedDates}
-          onChangeMonth={onChangeCalendarMonth}
-        />
+        <div className="dashboard-left">
+          <TimerCard />
+
+          <CalendarCard
+            selectedDate={selectedDate}
+            onSelectDate={onSelectDate}
+            viewYear={calendarYear}
+            viewMonth={calendarMonth}
+            markedDates={markedDates}
+            onChangeMonth={onChangeCalendarMonth}
+          />
+        </div>
 
         <TodoCardList
           selectedDate={selectedDate}
@@ -57,16 +62,6 @@ function HomePage({
           onDeleteTodo={onDeleteTodo}
         />
       </section>
-
-      <BottomNav
-        onChangePage={onChangePage}
-        onOpenNotification={() => setIsNotificationModalOpen(true)}
-      />
-
-      <NotificationModal
-        isOpen={isNotificationModalOpen}
-        onClose={() => setIsNotificationModalOpen(false)}
-      />
 
       <FriendAddModal
         isOpen={isFriendAddModalOpen}

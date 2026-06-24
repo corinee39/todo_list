@@ -43,6 +43,10 @@ export function getFriendTodos(friendId, date) {
   return request(`/api/friends/${friendId}/todos?date=${date}`);
 }
 
+export function getFriendTodoDatesByMonth(friendId, year, month) {
+  return request(`/api/friends/${friendId}/todos/month?year=${year}&month=${month}`);
+}
+
 export function getFriendTodoDetail(friendId, todoId) {
   return request(`/api/friends/${friendId}/todos/${todoId}`);
 }

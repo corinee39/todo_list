@@ -14,7 +14,7 @@ function formatTime(totalSeconds) {
   )}`;
 }
 
-function TimerCard() {
+function TimerCard({ disabled = false }) {
   const [inputMinutes, setInputMinutes] = useState(DEFAULT_MINUTES);
   const [inputSeconds, setInputSeconds] = useState(DEFAULT_SECONDS);
   const [totalSeconds, setTotalSeconds] = useState(
@@ -90,7 +90,7 @@ function TimerCard() {
       : 0;
 
   return (
-    <section className="timer-card">
+    <section className={`timer-card${disabled ? ' disabled' : ''}`}>
       <div
         className="timer-circle"
         style={{
@@ -112,7 +112,7 @@ function TimerCard() {
               type="number"
               min="0"
               value={inputMinutes}
-              disabled={isRunning}
+              disabled={disabled || isRunning}
               onChange={(event) => setInputMinutes(event.target.value)}
             />
           </label>
@@ -124,28 +124,32 @@ function TimerCard() {
               min="0"
               max="59"
               value={inputSeconds}
-              disabled={isRunning}
+              disabled={disabled || isRunning}
               onChange={(event) => setInputSeconds(event.target.value)}
             />
           </label>
 
-          <button type="button" disabled={isRunning} onClick={handleApplyTime}>
+          <button
+            type="button"
+            disabled={disabled || isRunning}
+            onClick={handleApplyTime}
+          >
             적용
           </button>
         </div>
 
         <div className="timer-actions">
           {isRunning ? (
-            <button type="button" onClick={handlePause}>
+            <button type="button" disabled={disabled} onClick={handlePause}>
               일시정지
             </button>
           ) : (
-            <button type="button" onClick={handleStart}>
+            <button type="button" disabled={disabled} onClick={handleStart}>
               시작
             </button>
           )}
 
-          <button type="button" onClick={handleReset}>
+          <button type="button" disabled={disabled} onClick={handleReset}>
             초기화
           </button>
         </div>

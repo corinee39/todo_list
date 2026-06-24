@@ -1,9 +1,12 @@
 package com.bwsy.todolist.controller;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -14,7 +17,10 @@ import com.bwsy.todolist.dto.friend.MemberSearchResponse;
 import com.bwsy.todolist.mapper.MemberMapper;
 import com.bwsy.todolist.security.UserPrincipal;
 import com.bwsy.todolist.service.FriendService;
+import com.bwsy.todolist.service.MemberService;
+import com.bwsy.todolist.validation.MemberUpdateRequest;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -25,6 +31,8 @@ public class MemberController {
     private final MemberMapper memberMapper;
 
     private final FriendService friendService;
+
+    private final MemberService memberService;
 
     /**
      * 내 정보 조회 API
@@ -82,5 +90,24 @@ public class MemberController {
         Long loginUserId = principal.getUserId();
 
         return friendService.searchMembers(keyword, loginUserId);
+    }
+
+    // 닉네임 수정 API
+    @PostMapping("/me/update")
+    public MemberResponse updateMyInfo(
+            @AuthenticationPrincipal UserPrincipal principal,
+            @Valid @RequestBody MemberUpdateRequest request
+    ) {
+        return memberService.updateNickname(principal.getUserId(), request.getNickname());
+    }
+
+    // 회원 탈퇴 API (소프트 삭제)
+    @PostMapping("/me/delete")
+    public Map<String, String> deleteMyAccount(
+            @AuthenticationPrincipal UserPrincipal principal
+    ) {
+        memberService.deleteAccount(principal.getUserId());
+
+        return Map.of("message", "회원 탈퇴가 완료되었습니다.");
     }
 }

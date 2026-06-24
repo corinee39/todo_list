@@ -1,6 +1,21 @@
-import './SideMenu.css';
+import "./SideMenu.css";
 
-function SideMenu({ isOpen, isLoggedIn, onClose, onChangePage, onLogout }) {
+function getAvatarText(name) {
+  if (name && name.trim()) {
+    return name.trim().charAt(0);
+  }
+
+  return "?";
+}
+
+function SideMenu({
+  isOpen,
+  isLoggedIn,
+  nickname = "게스트",
+  onClose,
+  onChangePage,
+  onLogout,
+}) {
   const movePage = (pageName) => {
     onChangePage(pageName);
     onClose();
@@ -8,7 +23,7 @@ function SideMenu({ isOpen, isLoggedIn, onClose, onChangePage, onLogout }) {
 
   const moveProtectedPage = (pageName) => {
     if (!isLoggedIn) {
-      onChangePage('login');
+      onChangePage("login");
       onClose();
       return;
     }
@@ -23,7 +38,7 @@ function SideMenu({ isOpen, isLoggedIn, onClose, onChangePage, onLogout }) {
   };
 
   return (
-    <div className={`side-menu-overlay ${isOpen ? 'open' : ''}`}>
+    <div className={`side-menu-overlay ${isOpen ? "open" : ""}`}>
       <aside className="side-menu">
         <div className="side-menu-header">
           <h2>메뉴</h2>
@@ -32,45 +47,49 @@ function SideMenu({ isOpen, isLoggedIn, onClose, onChangePage, onLogout }) {
           </button>
         </div>
 
-        <div className="side-menu-profile">
-          <div className="side-menu-avatar">me</div>
-          <div>
-            <strong>me</strong>
+        <button
+          type="button"
+          className="side-menu-profile"
+          onClick={() => moveProtectedPage('myPage')}
+        >
+          <div className="side-menu-avatar">{getAvatarText(nickname)}</div>
+          <div className="side-menu-profile-text">
+            <strong>{nickname}</strong>
             <p>
               {isLoggedIn
-                ? '로그인 상태입니다.'
-                : '로그인 없이 둘러보는 중입니다.'}
+                ? '내 정보 보기 / 닉네임 수정'
+                : '로그인하고 내 정보를 관리하세요.'}
             </p>
           </div>
-        </div>
+        </button>
 
         <nav className="side-menu-list">
           <div className="side-menu-section">
             <p className="side-menu-section-title">카테고리</p>
-            <button onClick={() => moveProtectedPage('categoryCreate')}>
+            <button onClick={() => moveProtectedPage("categoryCreate")}>
               ＋ 카테고리 등록
             </button>
-            <button onClick={() => moveProtectedPage('categoryManage')}>
+            <button onClick={() => moveProtectedPage("categoryManage")}>
               ⚙ 카테고리 관리
             </button>
           </div>
 
           <div className="side-menu-section">
             <p className="side-menu-section-title">친구</p>
-            <button onClick={() => moveProtectedPage('friendRequest')}>
+            <button onClick={() => moveProtectedPage("friendRequest")}>
               👥 친구 요청
             </button>
-            <button onClick={() => moveProtectedPage('friendList')}>
+            <button onClick={() => moveProtectedPage("friendList")}>
               🙂 친구 목록
             </button>
           </div>
 
           <div className="side-menu-section">
             <p className="side-menu-section-title">기능</p>
-            <button onClick={() => moveProtectedPage('aiTodo')}>
+            <button onClick={() => moveProtectedPage("aiTodo")}>
               🤖 AI 할 일 생성
             </button>
-            <button onClick={() => movePage('board')}>📝 게시판</button>
+            <button onClick={() => movePage("board")}>📝 게시판</button>
           </div>
 
           <div className="side-menu-section">
@@ -81,7 +100,7 @@ function SideMenu({ isOpen, isLoggedIn, onClose, onChangePage, onLogout }) {
                 로그아웃
               </button>
             ) : (
-              <button onClick={() => movePage('login')}>로그인</button>
+              <button onClick={() => movePage("login")}>로그인</button>
             )}
           </div>
         </nav>

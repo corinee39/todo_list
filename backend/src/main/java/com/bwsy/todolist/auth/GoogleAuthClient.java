@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
@@ -16,6 +17,7 @@ import com.bwsy.todolist.dto.GoogleTokenResponse;
 import com.bwsy.todolist.dto.GoogleUserInfoResponse;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * 구글 로그인 API와 통신하는 클래스
@@ -25,6 +27,7 @@ import lombok.RequiredArgsConstructor;
  * 2. 발급받은 구글 access_token으로 구글 사용자 정보 조회
  * 3. 조회한 사용자 정보를 SocialUserInfo 객체로 변환해서 AuthService에 반환
  */
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class GoogleAuthClient {
@@ -102,7 +105,14 @@ public class GoogleAuthClient {
 
             return body.getAccessToken();
 
+        } catch (HttpStatusCodeException e) {
+            // 구글이 4xx/5xx로 응답한 경우 실제 에러 본문을 로그로 남긴다.
+            // (예: invalid_client, redirect_uri_mismatch, invalid_grant)
+            log.error("구글 access token 요청 실패 - status: {}, body: {}",
+                    e.getStatusCode(), e.getResponseBodyAsString());
+            throw new IllegalArgumentException("구글 access token 요청에 실패했습니다.");
         } catch (RestClientException e) {
+            log.error("구글 access token 요청 중 오류 발생", e);
             throw new IllegalArgumentException("구글 access token 요청에 실패했습니다.");
         }
     }
@@ -156,7 +166,12 @@ public class GoogleAuthClient {
                     nickname
             );
 
+        } catch (HttpStatusCodeException e) {
+            log.error("구글 사용자 정보 요청 실패 - status: {}, body: {}",
+                    e.getStatusCode(), e.getResponseBodyAsString());
+            throw new IllegalArgumentException("구글 사용자 정보 요청에 실패했습니다.");
         } catch (RestClientException e) {
+            log.error("구글 사용자 정보 요청 중 오류 발생", e);
             throw new IllegalArgumentException("구글 사용자 정보 요청에 실패했습니다.");
         }
     }

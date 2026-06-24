@@ -57,10 +57,22 @@
   display: flex;
   align-items: center;
   gap: 12px;
+  width: 100%;
   margin-bottom: 28px;
   padding: 16px;
+  border: 0;
   border-radius: 20px;
   background-color: #f7f7fb;
+  text-align: left;
+  cursor: pointer;
+}
+
+.side-menu-profile:hover {
+  background-color: #eeeef4;
+}
+
+.side-menu-profile-text {
+  flex: 1;
 }
 
 .side-menu-avatar {

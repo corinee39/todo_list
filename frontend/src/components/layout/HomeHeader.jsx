@@ -2,8 +2,27 @@ import { useState } from 'react';
 import SideMenu from './SideMenu';
 import './HomeHeader.css';
 
-function HomeHeader({ isLoggedIn, onChangePage, onLogout, onOpenFriendAdd }) {
+function getAvatarText(name) {
+  if (name && name.trim()) {
+    return name.trim().charAt(0);
+  }
+
+  return '?';
+}
+
+function HomeHeader({
+  isLoggedIn,
+  currentUser,
+  friends = [],
+  onChangePage,
+  onLogout,
+  onOpenFriendAdd,
+  onOpenFriendTodos,
+}) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  const displayName =
+    isLoggedIn && currentUser?.nickname ? currentUser.nickname : '게스트';
 
   const handleOpenMenu = () => {
     setIsMenuOpen(true);
@@ -18,19 +37,20 @@ function HomeHeader({ isLoggedIn, onChangePage, onLogout, onOpenFriendAdd }) {
       <header className="home-header">
         <div className="friend-list">
           <button className="profile-chip active">
-            <span className="avatar">me</span>
-            <span>me</span>
+            <span className="avatar">{getAvatarText(displayName)}</span>
+            <span>{displayName}</span>
           </button>
 
-          <button className="profile-chip">
-            <span className="avatar animal">🐰</span>
-            <span>모모</span>
-          </button>
-
-          <button className="profile-chip">
-            <span className="avatar animal">🐻</span>
-            <span>하니</span>
-          </button>
+          {friends.map((friend) => (
+            <button
+              className="profile-chip"
+              key={friend.id}
+              onClick={() => onOpenFriendTodos(friend.id)}
+            >
+              <span className="avatar">{getAvatarText(friend.name)}</span>
+              <span>{friend.name}</span>
+            </button>
+          ))}
 
           <button className="friend-add-button" onClick={onOpenFriendAdd}>
             ＋
@@ -51,6 +71,7 @@ function HomeHeader({ isLoggedIn, onChangePage, onLogout, onOpenFriendAdd }) {
       <SideMenu
         isOpen={isMenuOpen}
         isLoggedIn={isLoggedIn}
+        nickname={displayName}
         onClose={handleCloseMenu}
         onChangePage={onChangePage}
         onLogout={onLogout}

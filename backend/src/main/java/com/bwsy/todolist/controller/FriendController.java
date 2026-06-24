@@ -106,6 +106,19 @@ public class FriendController {
         );
     }
 
+    // 친구의 특정 연/월에 할 일이 존재하는 날짜 목록 조회 (달력 점 표시용)
+    @GetMapping("/{friendId}/todos/month")
+    public List<LocalDate> findFriendTodoDates(
+            @AuthenticationPrincipal UserPrincipal principal,
+            @PathVariable("friendId") Long friendId,
+            @RequestParam("year") int year,
+            @RequestParam("month") int month
+    ) {
+        Long loginUserId = principal.getUserId();
+
+        return friendTodoService.findFriendTodoDates(loginUserId, friendId, year, month);
+    }
+
     // 친구 할 일 상세 조회
     @GetMapping("/{friendId}/todos/{todoId}")
     public FriendTodoDetailResponse findFriendTodoDetail(

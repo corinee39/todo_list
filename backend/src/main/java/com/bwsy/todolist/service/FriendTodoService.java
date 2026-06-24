@@ -50,6 +50,20 @@ public class FriendTodoService {
     }
 
     /*
+     * 친구의 특정 연/월에 할 일이 존재하는 날짜 목록 조회 (달력 점 표시용)
+     */
+    public List<LocalDate> findFriendTodoDates(
+            Long loginUserId,
+            Long friendId,
+            int year,
+            int month
+    ) {
+        Long friendUserId = getFriendUserIdOrThrow(loginUserId, friendId);
+
+        return friendTodoMapper.findFriendTodoDatesByMonth(friendUserId, year, month);
+    }
+
+    /*
      * 친구 할 일 상세 조회
      *
      * loginUserId : JWT에서 꺼낸 현재 로그인 사용자 ID

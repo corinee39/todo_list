@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import './TodoCardList.css';
+import { useState } from "react";
+import "./TodoCardList.css";
 
 function TodoCardList({
   selectedDate,
@@ -7,6 +7,7 @@ function TodoCardList({
   onAddTodo,
   onToggleTodo,
   onDeleteTodo,
+  readOnly = false,
 }) {
   const [inputValues, setInputValues] = useState({});
 
@@ -30,7 +31,7 @@ function TodoCardList({
 
     setInputValues((prevValues) => ({
       ...prevValues,
-      [sectionId]: '',
+      [sectionId]: "",
     }));
   };
 
@@ -38,7 +39,7 @@ function TodoCardList({
     <div className="todo-card-list">
       <div className="todo-list-header">
         <div>
-          <h2>선택 날짜 할 일</h2>
+          <h2>선택된 날짜 할 일</h2>
           <p>{selectedDate}</p>
         </div>
       </div>
@@ -56,7 +57,7 @@ function TodoCardList({
               section.todos.map((todo) => (
                 <div
                   className={`todo-item-row ${
-                    todo.completed ? 'completed' : ''
+                    todo.completed ? "completed" : ""
                   }`}
                   key={todo.id}
                 >
@@ -64,36 +65,45 @@ function TodoCardList({
                     <input
                       type="checkbox"
                       checked={todo.completed}
-                      onChange={() => onToggleTodo(section.id, todo.id)}
+                      disabled={readOnly}
+                      onChange={
+                        readOnly
+                          ? undefined
+                          : () => onToggleTodo(section.id, todo.id)
+                      }
                     />
                     <span>{todo.title}</span>
                   </label>
 
-                  <button
-                    className="todo-delete-button"
-                    onClick={() => onDeleteTodo(section.id, todo.id)}
-                  >
-                    삭제
-                  </button>
+                  {!readOnly && (
+                    <button
+                      className="todo-delete-button"
+                      onClick={() => onDeleteTodo(section.id, todo.id)}
+                    >
+                      삭제
+                    </button>
+                  )}
                 </div>
               ))
             )}
           </div>
 
-          <form
-            className="todo-add-form"
-            onSubmit={(event) => handleSubmitTodo(event, section.id)}
-          >
-            <input
-              type="text"
-              value={inputValues[section.id] || ''}
-              placeholder="새 할 일 추가"
-              onChange={(event) =>
-                handleChangeInput(section.id, event.target.value)
-              }
-            />
-            <button type="submit">추가</button>
-          </form>
+          {!readOnly && (
+            <form
+              className="todo-add-form"
+              onSubmit={(event) => handleSubmitTodo(event, section.id)}
+            >
+              <input
+                type="text"
+                value={inputValues[section.id] || ""}
+                placeholder="새 할 일 추가"
+                onChange={(event) =>
+                  handleChangeInput(section.id, event.target.value)
+                }
+              />
+              <button type="submit">추가</button>
+            </form>
+          )}
         </article>
       ))}
     </div>

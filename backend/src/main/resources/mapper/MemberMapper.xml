@@ -71,6 +71,32 @@
         WHERE nickname = #{nickname}
     </select>
 
+    <select id="countByNicknameAndNotUserId" resultType="int">
+        SELECT COUNT(*)
+        FROM users
+        WHERE nickname = #{nickname}
+          AND user_id != #{userId}
+    </select>
+
+    <update id="updateNickname">
+        UPDATE users
+        SET nickname = #{nickname},
+            updated_at = SYSTIMESTAMP
+        WHERE user_id = #{userId}
+          AND status = 'ACTIVE'
+          AND deleted_at IS NULL
+    </update>
+
+    <update id="softDeleteMember">
+        UPDATE users
+        SET status = 'DELETED',
+            deleted_at = SYSTIMESTAMP,
+            updated_at = SYSTIMESTAMP
+        WHERE user_id = #{userId}
+          AND status = 'ACTIVE'
+          AND deleted_at IS NULL
+    </update>
+
     <insert id="insertMember" parameterType="com.bwsy.todolist.dto.MemberDTO">
         INSERT INTO users (
             email,
