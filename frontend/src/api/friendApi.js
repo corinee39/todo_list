@@ -4,11 +4,11 @@ export function searchMembers(keyword) {
   return request(`/api/members/search?keyword=${encodeURIComponent(keyword)}`);
 }
 
-export function sendFriendRequest(friendIdentifier) {
+export function sendFriendRequest(receiverId) {
   return request('/api/friends/requests', {
     method: 'POST',
     body: JSON.stringify({
-      friendIdentifier,
+      receiverId,
     }),
   });
 }

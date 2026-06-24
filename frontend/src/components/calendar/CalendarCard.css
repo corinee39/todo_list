@@ -59,6 +59,8 @@
   position: relative;
 }
 
+/* 점 자리를 항상 비워 두어 날짜 정렬이 흔들리지 않게 하고,
+   할 일이 있는 날짜(.has-todo)에만 회색 점을 보여준다. */
 .calendar-grid button::before {
   content: '';
   position: absolute;
@@ -67,13 +69,21 @@
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background-color: #ddd;
+  background-color: transparent;
   transform: translateX(-50%);
+}
+
+.calendar-grid button.has-todo::before {
+  background-color: #b0b0b8;
 }
 
 .calendar-grid button.selected {
   background-color: #222;
   color: #fff !important;
+}
+
+.calendar-grid button.selected.has-todo::before {
+  background-color: #fff;
 }
 
 .calendar-grid button.today:not(.selected) {

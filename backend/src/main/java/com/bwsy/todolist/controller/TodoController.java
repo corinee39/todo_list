@@ -42,6 +42,18 @@ public class TodoController {
         return ResponseEntity.ok(todoService.findTodos(userId, todoDate));
     }
 
+    // 달력 점 표시용: 해당 연/월에 할 일이 존재하는 날짜 목록을 조회
+    @GetMapping("/month")
+    public ResponseEntity<List<LocalDate>> findTodoDatesByMonth(
+            @AuthenticationPrincipal UserPrincipal principal,
+            @RequestParam("year") int year,
+            @RequestParam("month") int month
+    ) {
+        Long userId = principal.getUserId();
+
+        return ResponseEntity.ok(todoService.findTodoDatesByMonth(userId, year, month));
+    }
+
     @PostMapping
     public ResponseEntity<TodoDTO> createTodo(
             @AuthenticationPrincipal UserPrincipal principal,

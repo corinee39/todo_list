@@ -1,24 +1,59 @@
 import { useState } from 'react';
 import './FriendAddModal.css';
 
-function FriendAddModal({ isOpen, onClose }) {
-  const [friendId, setFriendId] = useState('');
+function getAvatarText(nickname) {
+  if (nickname && nickname.trim()) {
+    return nickname.trim().charAt(0);
+  }
+
+  return '🙂';
+}
+
+function FriendAddModal({
+  isOpen,
+  onClose,
+  onSearchMembers,
+  onSendFriendRequest,
+}) {
+  const [keyword, setKeyword] = useState('');
+  const [searchResults, setSearchResults] = useState([]);
+  const [isSearching, setIsSearching] = useState(false);
+  const [hasSearched, setHasSearched] = useState(false);
 
   if (!isOpen) {
     return null;
   }
 
-  const handleSubmit = (event) => {
+  const handleClose = () => {
+    setKeyword('');
+    setSearchResults([]);
+    setHasSearched(false);
+    onClose();
+  };
+
+  const handleSubmit = async (event) => {
     event.preventDefault();
 
-    if (!friendId.trim()) {
-      alert('친구 아이디 또는 이메일을 입력해주세요.');
+    const trimmedKeyword = keyword.trim();
+
+    if (!trimmedKeyword) {
+      alert('아이디(닉네임) 또는 이메일을 입력해주세요.');
       return;
     }
 
-    alert(`${friendId}님에게 친구 요청을 보냈습니다.`);
-    setFriendId('');
-    onClose();
+    setIsSearching(true);
+
+    try {
+      const results = await onSearchMembers(trimmedKeyword);
+      setSearchResults(results || []);
+      setHasSearched(true);
+    } finally {
+      setIsSearching(false);
+    }
+  };
+
+  const handleSendRequest = async (receiverId) => {
+    await onSendFriendRequest(receiverId);
   };
 
   return (
@@ -27,49 +62,59 @@ function FriendAddModal({ isOpen, onClose }) {
         <div className="friend-add-modal-header">
           <div>
             <h2>친구 추가</h2>
-            <p>아이디나 이메일로 친구를 찾아 요청을 보낼 수 있어요.</p>
+            <p>닉네임이나 이메일로 친구를 찾아 요청을 보낼 수 있어요.</p>
           </div>
 
-          <button className="friend-add-modal-close" onClick={onClose}>
+          <button className="friend-add-modal-close" onClick={handleClose}>
             ×
           </button>
         </div>
 
         <form className="friend-add-form" onSubmit={handleSubmit}>
           <label>
-            <span>친구 아이디 또는 이메일</span>
+            <span>친구 닉네임 또는 이메일</span>
             <input
               type="text"
-              value={friendId}
-              placeholder="예: momo@example.com"
-              onChange={(event) => setFriendId(event.target.value)}
+              value={keyword}
+              placeholder="예: momo 또는 momo@example.com"
+              onChange={(event) => setKeyword(event.target.value)}
             />
           </label>
 
-          <button type="submit">친구 요청 보내기</button>
+          <button type="submit" disabled={isSearching}>
+            {isSearching ? '검색 중...' : '검색'}
+          </button>
         </form>
 
         <section className="friend-recommend-card">
-          <h3>추천 친구</h3>
+          <h3>검색 결과</h3>
 
           <div className="friend-recommend-list">
-            <div className="friend-recommend-item">
-              <div className="friend-recommend-avatar">🐰</div>
-              <div>
-                <strong>모모</strong>
-                <p>정보처리기사 공부 중</p>
-              </div>
-              <button>요청</button>
-            </div>
-
-            <div className="friend-recommend-item">
-              <div className="friend-recommend-avatar">🐻</div>
-              <div>
-                <strong>하니</strong>
-                <p>오늘 뽀모도로 2세트 완료</p>
-              </div>
-              <button>요청</button>
-            </div>
+            {!hasSearched ? (
+              <p className="friend-recommend-empty">
+                닉네임이나 이메일로 친구를 검색해보세요.
+              </p>
+            ) : searchResults.length === 0 ? (
+              <p className="friend-recommend-empty">검색 결과가 없습니다.</p>
+            ) : (
+              searchResults.map((member) => (
+                <div className="friend-recommend-item" key={member.userId}>
+                  <div className="friend-recommend-avatar">
+                    {getAvatarText(member.nickname)}
+                  </div>
+                  <div>
+                    <strong>{member.nickname}</strong>
+                    <p>{member.email}</p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => handleSendRequest(member.userId)}
+                  >
+                    요청
+                  </button>
+                </div>
+              ))
+            )}
           </div>
         </section>
       </div>

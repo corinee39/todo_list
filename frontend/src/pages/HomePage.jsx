@@ -14,10 +14,16 @@ function HomePage({
   onLogout,
   selectedDate,
   onSelectDate,
+  calendarYear,
+  calendarMonth,
+  markedDates,
+  onChangeCalendarMonth,
   todoSections,
   onAddTodo,
   onToggleTodo,
   onDeleteTodo,
+  onSearchMembers,
+  onSendFriendRequest,
 }) {
   const [isNotificationModalOpen, setIsNotificationModalOpen] = useState(false);
   const [isFriendAddModalOpen, setIsFriendAddModalOpen] = useState(false);
@@ -37,6 +43,10 @@ function HomePage({
         <CalendarCard
           selectedDate={selectedDate}
           onSelectDate={onSelectDate}
+          viewYear={calendarYear}
+          viewMonth={calendarMonth}
+          markedDates={markedDates}
+          onChangeMonth={onChangeCalendarMonth}
         />
 
         <TodoCardList
@@ -61,6 +71,8 @@ function HomePage({
       <FriendAddModal
         isOpen={isFriendAddModalOpen}
         onClose={() => setIsFriendAddModalOpen(false)}
+        onSearchMembers={onSearchMembers}
+        onSendFriendRequest={onSendFriendRequest}
       />
     </main>
   );

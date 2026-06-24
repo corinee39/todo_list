@@ -1,35 +1,27 @@
 import { useMemo, useState } from 'react';
 import './BoardPage.css';
 
-const BOARD_FILTERS = ['전체', '공지', '질문', '공유', '자유'];
+const POST_CATEGORIES = [
+  { value: 'FREE', label: '자유' },
+  { value: 'QUESTION', label: '질문' },
+  { value: 'TIP', label: '팁' },
+  { value: 'STUDY', label: '공부' },
+  { value: 'ERROR', label: '에러' },
+];
 
-function getPostCategory(post) {
-  if (post.category) {
-    return post.category;
-  }
-
-  if (post.title.includes('정보처리기사')) {
-    return '질문';
-  }
-
-  if (post.title.includes('AI')) {
-    return '공유';
-  }
-
-  return '자유';
-}
+const BOARD_FILTERS = ['전체', ...POST_CATEGORIES.map((item) => item.label)];
 
 function BoardPage({ onChangePage, boardPosts, onAddBoardPost }) {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
+  const [category, setCategory] = useState('FREE');
   const [selectedFilter, setSelectedFilter] = useState('전체');
   const [keyword, setKeyword] = useState('');
 
   const filteredPosts = useMemo(() => {
     return boardPosts.filter((post) => {
-      const postCategory = getPostCategory(post);
       const matchesCategory =
-        selectedFilter === '전체' || postCategory === selectedFilter;
+        selectedFilter === '전체' || post.categoryLabel === selectedFilter;
 
       const searchText = `${post.title} ${post.content}`.toLowerCase();
       const matchesKeyword = searchText.includes(keyword.toLowerCase());
@@ -52,10 +44,12 @@ function BoardPage({ onChangePage, boardPosts, onAddBoardPost }) {
     onAddBoardPost({
       title: trimmedTitle,
       content: trimmedContent,
+      category,
     });
 
     setTitle('');
     setContent('');
+    setCategory('FREE');
   };
 
   return (
@@ -85,6 +79,17 @@ function BoardPage({ onChangePage, boardPosts, onAddBoardPost }) {
               placeholder="제목"
               onChange={(event) => setTitle(event.target.value)}
             />
+
+            <select
+              value={category}
+              onChange={(event) => setCategory(event.target.value)}
+            >
+              {POST_CATEGORIES.map((item) => (
+                <option key={item.value} value={item.value}>
+                  {item.label}
+                </option>
+              ))}
+            </select>
 
             <textarea
               value={content}
@@ -143,14 +148,14 @@ function BoardPage({ onChangePage, boardPosts, onAddBoardPost }) {
             ) : (
               filteredPosts.map((post) => (
                 <article className="board-table-row" key={post.id}>
-                  <span className="board-category">{getPostCategory(post)}</span>
+                  <span className="board-category">{post.categoryLabel}</span>
 
                   <div className="board-post-title">
                     <strong>{post.title}</strong>
                     <p>{post.content}</p>
                   </div>
 
-                  <span>me</span>
+                  <span>{post.author}</span>
                   <span>{post.createdAt}</span>
                 </article>
               ))

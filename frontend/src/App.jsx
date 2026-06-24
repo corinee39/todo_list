@@ -7,7 +7,23 @@ import {
   deleteTodoCategory,
   getTodoCategories,
 } from './api/categoryApi';
-import { createTodo, deleteTodo, getTodosByDate, updateTodo } from './api/todoApi';
+import {
+  createTodo,
+  deleteTodo,
+  getTodoDatesByMonth,
+  getTodosByDate,
+  updateTodo,
+} from './api/todoApi';
+import {
+  acceptFriendRequest,
+  deleteFriend,
+  getFriends,
+  getReceivedFriendRequests,
+  rejectFriendRequest,
+  searchMembers,
+  sendFriendRequest,
+} from './api/friendApi';
+import { createPost, getPosts } from './api/postApi';
 import AiTodoPage from './pages/AiTodoPage';
 import BoardPage from './pages/BoardPage';
 import CategoryCreatePage from './pages/CategoryCreatePage';
@@ -19,54 +35,16 @@ import LoginPage from './pages/LoginPage';
 import MyPage from './pages/MyPage';
 import OAuthCallbackPage from './pages/OAuthCallbackPage';
 
-const DEFAULT_TODO_DATE = '2026-05-22';
-
 const CATEGORY_THEMES = ['yellow', 'pink', 'green', 'purple', 'blue'];
 
-const INITIAL_FRIEND_REQUESTS = [
-  {
-    id: 'request-1',
-    name: '모모',
-    avatar: '🐰',
-    message: '같이 공부 기록을 공유하고 싶어요.',
-  },
-  {
-    id: 'request-2',
-    name: '하니',
-    avatar: '🐻',
-    message: '오늘 할 일 같이 체크해요.',
-  },
-  {
-    id: 'request-3',
-    name: '도리',
-    avatar: '🐱',
-    message: '정보처리기사 공부 같이 해요.',
-  },
-];
+function getTodayDateString() {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const day = String(now.getDate()).padStart(2, '0');
 
-const INITIAL_FRIENDS = [
-  {
-    id: 'friend-1',
-    name: '진지니',
-    avatar: '🐶',
-    message: '뽀모도로 3세트 완료',
-  },
-];
-
-const INITIAL_BOARD_POSTS = [
-  {
-    id: 'post-1',
-    title: '정보처리기사 필기 공부 시작',
-    content: '오늘은 운영체제와 데이터베이스 위주로 공부할 예정입니다.',
-    createdAt: '2026.05.22',
-  },
-  {
-    id: 'post-2',
-    title: 'AI 할 일 생성 기능 정리',
-    content: '목표를 입력하면 할 일을 쪼개주는 흐름으로 구현했습니다.',
-    createdAt: '2026.05.22',
-  },
-];
+  return `${year}-${month}-${day}`;
+}
 
 const PAGE_PATHS = {
   home: '/',
@@ -110,6 +88,64 @@ function convertCategoryToSection(category, index, selectedTheme) {
   };
 }
 
+const POST_CATEGORY_LABELS = {
+  FREE: '자유',
+  QUESTION: '질문',
+  TIP: '팁',
+  STUDY: '공부',
+  ERROR: '에러',
+};
+
+function getAvatarText(nickname) {
+  if (nickname && nickname.trim()) {
+    return nickname.trim().charAt(0);
+  }
+
+  return '🙂';
+}
+
+function formatDateTime(value) {
+  if (!value) {
+    return '';
+  }
+
+  return String(value).slice(0, 10).replaceAll('-', '.');
+}
+
+function convertFriendFromBackend(friend) {
+  return {
+    id: String(friend.friendId),
+    userId: friend.userId,
+    name: friend.nickname,
+    email: friend.email,
+    avatar: getAvatarText(friend.nickname),
+    message: friend.email,
+  };
+}
+
+function convertFriendRequestFromBackend(request) {
+  return {
+    id: String(request.requestId),
+    requesterId: request.requesterId,
+    name: request.requesterNickname,
+    email: request.requesterEmail,
+    avatar: getAvatarText(request.requesterNickname),
+    message: request.requesterEmail,
+  };
+}
+
+function convertPostFromBackend(post) {
+  return {
+    id: String(post.postId),
+    title: post.title,
+    content: post.content,
+    category: post.category,
+    categoryLabel: POST_CATEGORY_LABELS[post.category] || '자유',
+    author: post.nickname || '익명',
+    createdAt: formatDateTime(post.createdAt),
+  };
+}
+
 function convertTodoFromBackend(todo, selectedDate) {
   return {
     id: String(todo.todoId ?? todo.id),
@@ -134,12 +170,17 @@ function App() {
 function AppRoutes() {
   const navigate = useNavigate();
 
+  const today = getTodayDateString();
+
   const [isLoggedIn, setIsLoggedIn] = useState(Boolean(getAccessToken()));
-  const [selectedDate, setSelectedDate] = useState(DEFAULT_TODO_DATE);
+  const [selectedDate, setSelectedDate] = useState(today);
   const [todoSections, setTodoSections] = useState([]);
-  const [friendRequests, setFriendRequests] = useState(INITIAL_FRIEND_REQUESTS);
-  const [friends, setFriends] = useState(INITIAL_FRIENDS);
-  const [boardPosts, setBoardPosts] = useState(INITIAL_BOARD_POSTS);
+  const [markedDates, setMarkedDates] = useState([]);
+  const [calendarYear, setCalendarYear] = useState(Number(today.slice(0, 4)));
+  const [calendarMonth, setCalendarMonth] = useState(Number(today.slice(5, 7)));
+  const [friendRequests, setFriendRequests] = useState([]);
+  const [friends, setFriends] = useState([]);
+  const [boardPosts, setBoardPosts] = useState([]);
 
   useEffect(() => {
     async function checkLoginStatus() {
@@ -161,15 +202,6 @@ function AppRoutes() {
 
     checkLoginStatus();
   }, []);
-
-  useEffect(() => {
-    if (!isLoggedIn) {
-      setTodoSections([]);
-      return;
-    }
-
-    loadCategoriesAndTodos(selectedDate);
-  }, [isLoggedIn, selectedDate]);
 
   const requireLogin = () => {
     if (isLoggedIn) {
@@ -210,6 +242,99 @@ function AppRoutes() {
       console.error('백엔드 카테고리/투두 조회 실패:', error);
     }
   };
+
+  // 달력 점 표시용: 보고 있는 달에 할 일이 있는 날짜 목록을 조회
+  const loadMarkedDates = async (year, month) => {
+    try {
+      const result = await getTodoDatesByMonth(year, month);
+
+      const dates = getArrayData(result).map((date) =>
+        String(date).slice(0, 10)
+      );
+
+      setMarkedDates(dates);
+    } catch (error) {
+      console.error('월별 할 일 날짜 조회 실패:', error);
+      setMarkedDates([]);
+    }
+  };
+
+  const refreshMarkedDates = () => {
+    if (isLoggedIn) {
+      loadMarkedDates(calendarYear, calendarMonth);
+    }
+  };
+
+  const handleChangeCalendarMonth = (year, month) => {
+    setCalendarYear(year);
+    setCalendarMonth(month);
+  };
+
+  const loadFriends = async () => {
+    try {
+      const result = await getFriends();
+      setFriends(getArrayData(result).map(convertFriendFromBackend));
+    } catch (error) {
+      console.error('친구 목록 조회 실패:', error);
+      setFriends([]);
+    }
+  };
+
+  const loadReceivedRequests = async () => {
+    try {
+      const result = await getReceivedFriendRequests();
+      setFriendRequests(
+        getArrayData(result).map(convertFriendRequestFromBackend)
+      );
+    } catch (error) {
+      console.error('받은 친구 요청 조회 실패:', error);
+      setFriendRequests([]);
+    }
+  };
+
+  const loadBoardPosts = async () => {
+    try {
+      const result = await getPosts();
+      setBoardPosts(getArrayData(result).map(convertPostFromBackend));
+    } catch (error) {
+      console.error('게시글 목록 조회 실패:', error);
+      setBoardPosts([]);
+    }
+  };
+
+  useEffect(() => {
+    if (!isLoggedIn) {
+      setTodoSections([]);
+      return;
+    }
+
+    loadCategoriesAndTodos(selectedDate);
+  }, [isLoggedIn, selectedDate]);
+
+  useEffect(() => {
+    if (!isLoggedIn) {
+      setMarkedDates([]);
+      return;
+    }
+
+    loadMarkedDates(calendarYear, calendarMonth);
+  }, [isLoggedIn, calendarYear, calendarMonth]);
+
+  useEffect(() => {
+    if (!isLoggedIn) {
+      setFriends([]);
+      setFriendRequests([]);
+      return;
+    }
+
+    loadFriends();
+    loadReceivedRequests();
+  }, [isLoggedIn]);
+
+  // 게시글 조회는 비로그인 사용자도 가능하므로 로그인 여부와 무관하게 불러온다.
+  useEffect(() => {
+    loadBoardPosts();
+  }, []);
 
   const handleChangePage = (pageName) => {
     const path = PAGE_PATHS[pageName] || '/';
@@ -319,6 +444,7 @@ function AppRoutes() {
     try {
       await deleteTodoCategory(targetSection.categoryId);
       await loadCategoriesAndTodos(selectedDate);
+      refreshMarkedDates();
     } catch (error) {
       console.error(error);
       alert(error.message || '카테고리 삭제에 실패했습니다.');
@@ -349,6 +475,7 @@ function AppRoutes() {
       });
 
       await loadCategoriesAndTodos(selectedDate);
+      refreshMarkedDates();
     } catch (error) {
       console.error('백엔드 투두 등록 실패:', error);
       alert(error.message || '할 일 등록에 실패했습니다.');
@@ -379,6 +506,7 @@ function AppRoutes() {
       );
 
       await loadCategoriesAndTodos(selectedDate);
+      refreshMarkedDates();
     } catch (error) {
       console.error(error);
       alert(error.message || 'AI 할 일 추가에 실패했습니다.');
@@ -421,6 +549,7 @@ function AppRoutes() {
       });
 
       await loadCategoriesAndTodos(selectedDate);
+      refreshMarkedDates();
     } catch (error) {
       console.error('할 일 상태 변경 실패:', error);
       alert(error.message || '할 일 상태 변경에 실패했습니다.');
@@ -441,50 +570,71 @@ function AppRoutes() {
     try {
       await deleteTodo(todoId);
       await loadCategoriesAndTodos(selectedDate);
+      refreshMarkedDates();
     } catch (error) {
       console.error(error);
       alert(error.message || '할 일 삭제에 실패했습니다.');
     }
   };
 
-  const handleAcceptFriendRequest = (requestId) => {
+  const handleSearchMembers = async (keyword) => {
+    if (!requireLogin()) {
+      return [];
+    }
+
+    try {
+      const result = await searchMembers(keyword);
+      return getArrayData(result);
+    } catch (error) {
+      console.error('회원 검색 실패:', error);
+      alert(error.message || '회원 검색에 실패했습니다.');
+      return [];
+    }
+  };
+
+  const handleSendFriendRequest = async (receiverId) => {
     if (!requireLogin()) {
       return;
     }
 
-    const acceptedRequest = friendRequests.find(
-      (request) => request.id === requestId
-    );
-
-    if (!acceptedRequest) {
-      return;
+    try {
+      await sendFriendRequest(receiverId);
+      alert('친구 요청을 보냈습니다.');
+    } catch (error) {
+      console.error('친구 요청 전송 실패:', error);
+      alert(error.message || '친구 요청 전송에 실패했습니다.');
     }
-
-    const newFriend = {
-      id: `friend-${Date.now()}`,
-      name: acceptedRequest.name,
-      avatar: acceptedRequest.avatar,
-      message: '새로운 친구가 되었습니다.',
-    };
-
-    setFriends((prevFriends) => [...prevFriends, newFriend]);
-
-    setFriendRequests((prevRequests) =>
-      prevRequests.filter((request) => request.id !== requestId)
-    );
   };
 
-  const handleRejectFriendRequest = (requestId) => {
+  const handleAcceptFriendRequest = async (requestId) => {
     if (!requireLogin()) {
       return;
     }
 
-    setFriendRequests((prevRequests) =>
-      prevRequests.filter((request) => request.id !== requestId)
-    );
+    try {
+      await acceptFriendRequest(requestId);
+      await Promise.all([loadReceivedRequests(), loadFriends()]);
+    } catch (error) {
+      console.error('친구 요청 수락 실패:', error);
+      alert(error.message || '친구 요청 수락에 실패했습니다.');
+    }
   };
 
-  const handleDeleteFriend = (friendId) => {
+  const handleRejectFriendRequest = async (requestId) => {
+    if (!requireLogin()) {
+      return;
+    }
+
+    try {
+      await rejectFriendRequest(requestId);
+      await loadReceivedRequests();
+    } catch (error) {
+      console.error('친구 요청 거절 실패:', error);
+      alert(error.message || '친구 요청 거절에 실패했습니다.');
+    }
+  };
+
+  const handleDeleteFriend = async (friendId) => {
     if (!requireLogin()) {
       return;
     }
@@ -495,24 +645,27 @@ function AppRoutes() {
       return;
     }
 
-    setFriends((prevFriends) =>
-      prevFriends.filter((friend) => friend.id !== friendId)
-    );
+    try {
+      await deleteFriend(friendId);
+      await loadFriends();
+    } catch (error) {
+      console.error('친구 삭제 실패:', error);
+      alert(error.message || '친구 삭제에 실패했습니다.');
+    }
   };
 
-  const handleAddBoardPost = ({ title, content }) => {
+  const handleAddBoardPost = async ({ title, content, category }) => {
     if (!requireLogin()) {
       return;
     }
 
-    const newPost = {
-      id: `post-${Date.now()}`,
-      title,
-      content,
-      createdAt: '오늘',
-    };
-
-    setBoardPosts((prevPosts) => [newPost, ...prevPosts]);
+    try {
+      await createPost({ title, content, category });
+      await loadBoardPosts();
+    } catch (error) {
+      console.error('게시글 등록 실패:', error);
+      alert(error.message || '게시글 등록에 실패했습니다.');
+    }
   };
 
   return (
@@ -526,10 +679,16 @@ function AppRoutes() {
             onLogout={handleLogout}
             selectedDate={selectedDate}
             onSelectDate={setSelectedDate}
+            calendarYear={calendarYear}
+            calendarMonth={calendarMonth}
+            markedDates={markedDates}
+            onChangeCalendarMonth={handleChangeCalendarMonth}
             todoSections={todoSections}
             onAddTodo={handleAddTodo}
             onToggleTodo={handleToggleTodo}
             onDeleteTodo={handleDeleteTodo}
+            onSearchMembers={handleSearchMembers}
+            onSendFriendRequest={handleSendFriendRequest}
           />
         }
       />

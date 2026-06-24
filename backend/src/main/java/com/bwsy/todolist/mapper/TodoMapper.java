@@ -15,6 +15,11 @@ public interface TodoMapper {
     List<TodoDTO> findTodosByDate(@Param("userId") Long userId,
                                   @Param("todoDate") LocalDate todoDate);
 
+    // 연/월별로 할 일이 존재하는 날짜 목록 조회 (달력 점 표시용)
+    List<LocalDate> findTodoDatesByMonth(@Param("userId") Long userId,
+                                         @Param("year") int year,
+                                         @Param("month") int month);
+
     TodoDTO findTodoByIdAndUserId(@Param("todoId") Long todoId,
                                   @Param("userId") Long userId);
 

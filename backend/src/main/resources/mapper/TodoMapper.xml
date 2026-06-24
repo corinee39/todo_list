@@ -48,6 +48,16 @@
             created_at DESC
     </select>
 
+    <select id="findTodoDatesByMonth" resultType="java.time.LocalDate">
+        SELECT DISTINCT todo_date
+        FROM todos
+        WHERE user_id = #{userId}
+          AND EXTRACT(YEAR FROM todo_date) = #{year}
+          AND EXTRACT(MONTH FROM todo_date) = #{month}
+          AND deleted_at IS NULL
+        ORDER BY todo_date
+    </select>
+
     <select id="findTodoByIdAndUserId" resultMap="TodoResultMap">
         SELECT
             todo_id,

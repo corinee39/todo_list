@@ -26,6 +26,12 @@ public class TodoService {
         return todoMapper.findTodosByDate(userId, todoDate);
     }
 
+    // 특정 사용자의 특정 연/월에 할 일이 존재하는 날짜 목록을 조회 (달력 점 표시용)
+    @Transactional(readOnly = true)
+    public List<LocalDate> findTodoDatesByMonth(Long userId, int year, int month) {
+        return todoMapper.findTodoDatesByMonth(userId, year, month);
+    }
+
     // 특정 사용자의 할 일 상세 정보를 조회 - todoId와 userId 함께 사용해서 다른 사용자의 할 일 조회하지 못하도록
     @Transactional(readOnly = true)
     public TodoDTO findTodo(Long userId, Long todoId) {
